@@ -15,13 +15,12 @@ export async function POST(req: Request) {
     }
 
     const apiKey = process.env.GEMINI_API_KEY;
-
     if (!apiKey) {
       throw new Error('GEMINI_API_KEY is not set in environment variables');
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' }); // Using gemini-pro for text generation
+    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
     const prompt = `You are a social media post generator for Partyhub, an AI-powered platform for small, intimate events.
     Generate a compelling social media post based on the following:
@@ -38,10 +37,17 @@ export async function POST(req: Request) {
     const generatedText = response.text();
 
     return NextResponse.json({ generatedText });
-  } catch (error: any) {
+  } catch (error: unknown) { // Use 'unknown' instead of 'any'
     console.error('Error generating post:', error);
+
+    // Type check to safely access the 'message' property
+    let errorMessage = 'Failed to generate social media post';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
     return NextResponse.json(
-      { error: error.message || 'Failed to generate social media post' },
+      { error: errorMessage },
       { status: 500 }
     );
   }
