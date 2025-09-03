@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     const generatedText = response.text();
 
     return NextResponse.json({ generatedText });
-  } catch (error: unknown) { // Use 'unknown' instead of 'any'
+  } catch (error: unknown) { 
     console.error('Error generating post:', error);
 
     // Type check to safely access the 'message' property
