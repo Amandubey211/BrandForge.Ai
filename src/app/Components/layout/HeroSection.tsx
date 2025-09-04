@@ -51,7 +51,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             </div>
             <SplitText text="Effortlessly create stunning, on-brand social media content. Just provide a few details, and let our AI handle the rest." tag="p" splitType="words" delay={20} className="mt-4 text-lg text-slate-600 max-w-2xl mx-auto" />
             <div className="mt-8 flex justify-center items-center gap-3">
-              <p className="text-sm font-medium text-slate-500">Try a color:</p>
               {PRESET_COLORS.map((color) => (
                 <button
                   key={color}
