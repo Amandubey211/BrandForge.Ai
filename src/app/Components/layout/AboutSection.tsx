@@ -27,7 +27,7 @@ export const AboutSection = ({ brandColor }: { brandColor: string }) => {
   const [activeTab, setActiveTab] = useState(tabs[0].id);
 
   return (
-    <section id="about" className="py-20 bg-slate-50">
+    <section id="about" className="py-20 bg-slate-50 bg-grid">
       <div className="container mx-auto px-6">
         <h2 className="text-3xl font-bold text-center mb-12">
           Behind the Build

@@ -67,10 +67,10 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800">
+    <div className="min-h-screen bg-slate-50 text-slate-800 bg-grid">
       <Header brandColor={brandColor} />
       <HeroSection brandColor={brandColor} setBrandColor={setBrandColor} generatorRef={playgroundRef} />
-      <div id="generator" ref={playgroundRef} className='px-20'>
+      <div id="generator" ref={playgroundRef} className='-'>
         <Playground
           brandColor={brandColor} setBrandColor={setBrandColor}
           onGenerate={handleGenerate} isLoading={isLoading}

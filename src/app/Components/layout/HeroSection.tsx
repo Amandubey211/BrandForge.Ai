@@ -31,13 +31,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
   return (
     <div className="relative overflow-hidden  -mt-[88px] pt-[88px]">
-      {/* [REPLACED] The old Framer Motion divs are replaced with the new Aurora background */}
       <div className="absolute inset-0 z-0">
         <Aurora
           key={brandColor} // Use key to force re-render on color change
           colorStops={[brandColor, '#7cff67', brandColor]}
-          amplitude={0.6}
-          blend={0.8}
+          amplitude={0.3}
+          blend={0.9}
         />
       </div>
 
