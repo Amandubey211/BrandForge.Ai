@@ -1,36 +1,47 @@
-// src/components/layout/Header.tsx
+// src/app/Components/layout/Header.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 interface HeaderProps {
   brandColor: string;
 }
 
 const navLinks = [
-  { href: '#', label: 'Home' },
+  { href: '#home', label: 'Home' },
+  { href: '#generator', label: 'Generator' },
   { href: '#about', label: 'About' },
-  { href: '#owner', label: 'The Founder' },
+
 ];
 
 export const Header: React.FC<HeaderProps> = ({ brandColor }) => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [activeLink, setActiveLink] = useState('Home'); // State to track the active link
 
   useEffect(() => {
     const handleScroll = () => {
-      // Set state to true if user has scrolled more than 10px, otherwise false
       setIsScrolled(window.scrollY > 10);
+      
+      // Logic to determine active link based on scroll position
+      // This is a simple implementation. For production, a more robust solution
+      // might use Intersection Observer.
+      const scrollPosition = window.scrollY;
+      if (scrollPosition < 500) { // Approx height of hero
+        setActiveLink('Home');
+      } else {
+        setActiveLink('Generator');
+      }
+      // Add more else-if blocks for other sections like 'About' if they exist on the page
     };
 
-    // Add event listener when the component mounts
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
-    // Clean up the event listener when the component unmounts
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []); // Empty dependency array ensures this effect runs only once on mount
+  }, []);
 
   return (
     <header className="sticky top-4 z-50 transition-all duration-300 ease-in-out">
@@ -38,7 +49,7 @@ export const Header: React.FC<HeaderProps> = ({ brandColor }) => {
         className={`container mx-auto transition-all duration-300 ease-in-out
           ${
             isScrolled
-              ? 'max-w-4xl rounded-xl shadow-lg backdrop-blur-xl'
+              ? 'max-w-4xl rounded-xl shadow-lg backdrop-blur-xl bg-white/50  '
               : 'max-w-full rounded-none bg-transparent shadow-none'
           }`}
       >
@@ -48,15 +59,30 @@ export const Header: React.FC<HeaderProps> = ({ brandColor }) => {
             Party<span style={{ color: brandColor }}>Hub</span>
           </Link>
 
-          {/* Navigation Links */}
-          <nav className="hidden items-center gap-6 md:flex">
+          {/* Navigation Links with Hover & Active Animations */}
+          <nav className="hidden items-center gap-2 rounded-full bg-white/30 p-1 md:flex">
             {navLinks.map((link) => (
               <Link
                 key={link.label}
                 href={link.href}
-                className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+                onClick={() => setActiveLink(link.label)}
+                className={`relative rounded-full px-4 py-1.5 text-sm font-medium transition-colors
+                  ${
+                    activeLink === link.label
+                      ? 'text-white' // Active text color
+                      : 'text-slate-600 hover:text-slate-900' // Inactive text color
+                  }`}
               >
-                {link.label}
+                {/* Animated background pill for the active link */}
+                {activeLink === link.label && (
+                  <motion.div
+                    layoutId="active-pill" // This ID links the animation across different elements
+                    className="absolute inset-0 z-0 rounded-full"
+                    style={{ backgroundColor: brandColor }}
+                    transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+                  />
+                )}
+                <span className="relative z-10">{link.label}</span>
               </Link>
             ))}
           </nav>

@@ -4,8 +4,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import SplitText from '../animations/SplitText';
+import Aurora from '../animations/Aurora'; // [ADDED] Import the new Aurora component
 import { ArrowDown } from 'lucide-react';
-import Lenis from 'lenis'; // Import Lenis type for safety
+import type Lenis from 'lenis';
 
 // Define the shape of the props this component expects
 interface HeroSectionProps {
@@ -22,46 +23,27 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   generatorRef,
 }) => {
  const handleScrollToGenerator = () => {
-    // Assert the type of window here to be specific.
     const lenis = (window as { lenis?: Lenis }).lenis;
-    
     if (lenis && generatorRef.current) {
       lenis.scrollTo(generatorRef.current, { offset: -100 });
     }
   };
 
   return (
-    <div className="relative overflow-hidden -mt-[88px] pt-[88px]">
-      <motion.div
-        className="absolute inset-0 z-0"
-        initial="initial"
-        animate="animate"
-        variants={{ animate: { transition: { staggerChildren: 0.2 } } }}
-      >
-        {[...Array(5)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute bg-white/60 shadow-lg rounded-lg"
-            style={{
-              width: i % 2 === 0 ? 150 : 200,
-              height: i % 2 === 0 ? 200 : 150,
-              top: `${10 + i * 18}%`,
-              left: i < 2 ? `${10 + i * 15}%` : `${60 + (i - 2) * 10}%`,
-            }}
-            variants={{
-              initial: { opacity: 0, y: 50, scale: 0.9 },
-              animate: { opacity: 1, y: 0, scale: 1 },
-            }}
-            transition={{
-              y: { duration: 4 + i, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' },
-              rotate: { duration: 6 + i, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' },
-            }}
-            animate={{ y: ['-10px', '10px'], rotate: [-2 + i, 2 - i] }}
-          />
-        ))}
-      </motion.div>
-      <div className="relative z-10 backdrop-blur-sm">
-        <section className="text-center py-24 md:py-32 px-6 bg-white/80">
+    <div className="relative overflow-hidden  -mt-[88px] pt-[88px]">
+      {/* [REPLACED] The old Framer Motion divs are replaced with the new Aurora background */}
+      <div className="absolute inset-0 z-0">
+        <Aurora
+          key={brandColor} // Use key to force re-render on color change
+          colorStops={[brandColor, '#7cff67', brandColor]}
+          amplitude={0.6}
+          blend={0.8}
+        />
+      </div>
+
+      {/* The content now sits on top of the Aurora canvas */}
+      <div className="relative z-10">
+        <section className="text-center py-24 md:py-32 px-6 ">
           <div className="container mx-auto">
             <div className="text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight">
               <SplitText text="AI-Powered Social Posts for " tag="span" splitType="words" className="inline" />
