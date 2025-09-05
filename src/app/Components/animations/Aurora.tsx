@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
-import { Renderer, Program, Mesh, Color, Triangle } from 'ogl';
+import { useEffect, useRef } from "react";
+import { Renderer, Program, Mesh, Color, Triangle } from "ogl";
 
 const VERT = `#version 300 es
 in vec2 position;
@@ -118,7 +118,11 @@ interface AuroraProps {
 }
 
 export default function Aurora(props: AuroraProps) {
-  const { colorStops = ['#5227FF', '#8E4585', '#5227FF'], amplitude = 1.0, blend = 0.5 } = props;
+  const {
+    colorStops = ["#5227FF", "#8E4585", "#5227FF"],
+    amplitude = 1.0,
+    blend = 0.5,
+  } = props;
   const propsRef = useRef<AuroraProps>(props);
   propsRef.current = props;
 
@@ -128,12 +132,16 @@ export default function Aurora(props: AuroraProps) {
     const ctn = ctnDom.current;
     if (!ctn) return;
 
-    const renderer = new Renderer({ alpha: true, premultipliedAlpha: true, antialias: true });
+    const renderer = new Renderer({
+      alpha: true,
+      premultipliedAlpha: true,
+      antialias: true,
+    });
     const gl = renderer.gl;
     gl.clearColor(0, 0, 0, 0);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-    gl.canvas.style.backgroundColor = 'transparent';
+    gl.canvas.style.backgroundColor = "transparent";
 
     // [FIX 1] Changed 'let' to 'const' as it's not reassigned.
     const programRef = { current: null as Program | null };
@@ -147,7 +155,7 @@ export default function Aurora(props: AuroraProps) {
         programRef.current.uniforms.uResolution.value = [width, height];
       }
     }
-    window.addEventListener('resize', resize);
+    window.addEventListener("resize", resize);
 
     const geometry = new Triangle(gl);
     if (geometry.attributes.uv) delete geometry.attributes.uv;
@@ -158,10 +166,10 @@ export default function Aurora(props: AuroraProps) {
       uniforms: {
         uTime: { value: 0 },
         uAmplitude: { value: amplitude },
-        uColorStops: { value: colorStops.map(hex => new Color(hex)) },
+        uColorStops: { value: colorStops.map((hex) => new Color(hex)) },
         uResolution: { value: [ctn.offsetWidth, ctn.offsetHeight] },
-        uBlend: { value: blend }
-      }
+        uBlend: { value: blend },
+      },
     });
 
     const mesh = new Mesh(gl, { geometry, program: programRef.current });
@@ -174,10 +182,13 @@ export default function Aurora(props: AuroraProps) {
       const currentProgram = programRef.current;
       if (currentProgram) {
         currentProgram.uniforms.uTime.value = time * speed;
-        currentProgram.uniforms.uAmplitude.value = propsRef.current.amplitude ?? 1.0;
+        currentProgram.uniforms.uAmplitude.value =
+          propsRef.current.amplitude ?? 1.0;
         currentProgram.uniforms.uBlend.value = propsRef.current.blend ?? 0.5;
         const stops = propsRef.current.colorStops ?? colorStops;
-        currentProgram.uniforms.uColorStops.value = stops.map((hex: string) => new Color(hex));
+        currentProgram.uniforms.uColorStops.value = stops.map(
+          (hex: string) => new Color(hex)
+        );
         renderer.render({ scene: mesh });
       }
     };
@@ -187,11 +198,11 @@ export default function Aurora(props: AuroraProps) {
 
     return () => {
       cancelAnimationFrame(animateId);
-      window.removeEventListener('resize', resize);
+      window.removeEventListener("resize", resize);
       if (ctn && gl.canvas.parentNode === ctn) {
         ctn.removeChild(gl.canvas);
       }
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
+      gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
     // [FIX 2] Added dependencies to the useEffect array.
   }, [amplitude, blend, colorStops]);

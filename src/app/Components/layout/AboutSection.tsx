@@ -1,24 +1,46 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { User, Layers3, Cpu } from 'lucide-react';
-import Link from 'next/link';
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { User, Layers3, Cpu } from "lucide-react";
+import Link from "next/link";
 
 const tabs = [
-  { id: 'owner', label: 'About the Developer', icon: User },
-  { id: 'project', label: 'About the Project', icon: Layers3 },
-  { id: 'tech', label: 'Tech Stack', icon: Cpu },
+  { id: "owner", label: "About the Developer", icon: User },
+  { id: "project", label: "About the Project", icon: Layers3 },
+  { id: "tech", label: "Tech Stack", icon: Cpu },
 ];
 
 const techStack = [
-  { name: 'Next.js', description: 'For a high-performance, server-rendered React application.' },
-  { name: 'TypeScript', description: 'To ensure code quality, maintainability, and scalability.' },
-  { name: 'Tailwind CSS', description: 'For rapid, utility-first styling and a consistent design system.' },
-  { name: 'Framer Motion', description: 'To create fluid animations and a delightful user experience.' },
-  { name: 'GSAP & OGL', description: 'For advanced, high-performance text and WebGL animations.' },
-  { name: 'Lenis', description: 'To provide a premium, smooth scrolling experience.' },
-  { name: 'Google Gemini', description: 'As the core AI engine for generating creative post copy.' },
+  {
+    name: "Next.js",
+    description: "For a high-performance, server-rendered React application.",
+  },
+  {
+    name: "TypeScript",
+    description: "To ensure code quality, maintainability, and scalability.",
+  },
+  {
+    name: "Tailwind CSS",
+    description:
+      "For rapid, utility-first styling and a consistent design system.",
+  },
+  {
+    name: "Framer Motion",
+    description: "To create fluid animations and a delightful user experience.",
+  },
+  {
+    name: "GSAP & OGL",
+    description: "For advanced, high-performance text and WebGL animations.",
+  },
+  {
+    name: "Lenis",
+    description: "To provide a premium, smooth scrolling experience.",
+  },
+  {
+    name: "Google Gemini",
+    description: "As the core AI engine for generating creative post copy.",
+  },
 ];
 
 export const AboutSection = ({ brandColor }: { brandColor: string }) => {
@@ -41,8 +63,8 @@ export const AboutSection = ({ brandColor }: { brandColor: string }) => {
                 className={`relative flex-1 py-3 px-4 text-sm font-medium transition-colors focus:outline-none
                   ${
                     activeTab === tab.id
-                      ? 'text-slate-900'
-                      : 'text-slate-500 hover:text-slate-700'
+                      ? "text-slate-900"
+                      : "text-slate-500 hover:text-slate-700"
                   }`}
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
@@ -52,7 +74,7 @@ export const AboutSection = ({ brandColor }: { brandColor: string }) => {
                   <motion.div
                     layoutId="active-tab-indicator"
                     className="absolute inset-0 z-0 bg-slate-100 rounded-md"
-                    transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
                   />
                 )}
               </button>
@@ -69,35 +91,79 @@ export const AboutSection = ({ brandColor }: { brandColor: string }) => {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
               >
-                {activeTab === 'owner' && (
+                {activeTab === "owner" && (
                   <div className="space-y-4 text-slate-700">
-                    <h3 className="text-xl font-bold text-slate-900">Aman Dubey</h3>
-                    <p>I am a product-minded Full-Stack Developer with a passion for building AI-driven applications that are both powerful and beautiful. My expertise lies in the modern web stack, particularly Next.js and React, and I have extensive experience integrating generative AI models like Google Gemini to create engaging user experiences.</p>
-                    <p>This project is a reflection of my core philosophy: lead with a high-quality user experience, build on a robust and scalable architecture, and leverage AI to create genuinely useful tools.</p>
-                    <Link href="https://amandubey.vercel.app/" target="_blank" rel="noopener noreferrer" className="inline-block font-semibold" style={{ color: brandColor }}>
+                    <h3 className="text-xl font-bold text-slate-900">
+                      Aman Dubey
+                    </h3>
+                    <p>
+                      I am a product-minded Full-Stack Developer with a passion
+                      for building AI-driven applications that are both powerful
+                      and beautiful. My expertise lies in the modern web stack,
+                      particularly Next.js and React, and I have extensive
+                      experience integrating generative AI models like Google
+                      Gemini to create engaging user experiences.
+                    </p>
+                    <p>
+                      This project is a reflection of my core philosophy: lead
+                      with a high-quality user experience, build on a robust and
+                      scalable architecture, and leverage AI to create genuinely
+                      useful tools.
+                    </p>
+                    <Link
+                      href="https://amandubey.vercel.app/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block font-semibold"
+                      style={{ color: brandColor }}
+                    >
                       View My Portfolio &rarr;
                     </Link>
                   </div>
                 )}
 
-                {activeTab === 'project' && (
+                {activeTab === "project" && (
                   <div className="space-y-4 text-slate-700">
-                    <h3 className="text-xl font-bold text-slate-900">Purpose & Methodology</h3>
-                    <p>The goal of this assignment was to build an AI-powered social media post generator for PartyHub&apos;s event vendors. The key was to focus on the **quality of the output**, ensuring the generated content was polished and truly reflected the vendor&apos;s brand identity.</p>
-                    <p>My approach was **UX-First**. I began by architecting a delightful and interactive front-end experience. This included creating a dynamic, brand-aware UI with advanced animations and a guided multi-step form. This solid foundation ensures that the powerful AI backend is presented through an interface that is a joy to use.</p>
+                    <h3 className="text-xl font-bold text-slate-900">
+                      Purpose & Methodology
+                    </h3>
+                    <p>
+                      The goal of this assignment was to build an AI-powered
+                      social media post generator for PartyHub&apos;s event
+                      vendors. The key was to focus on the **quality of the
+                      output**, ensuring the generated content was polished and
+                      truly reflected the vendor&apos;s brand identity.
+                    </p>
+                    <p>
+                      My approach was **UX-First**. I began by architecting a
+                      delightful and interactive front-end experience. This
+                      included creating a dynamic, brand-aware UI with advanced
+                      animations and a guided multi-step form. This solid
+                      foundation ensures that the powerful AI backend is
+                      presented through an interface that is a joy to use.
+                    </p>
                   </div>
                 )}
 
-                {activeTab === 'tech' && (
+                {activeTab === "tech" && (
                   <div className="space-y-4">
-                    <h3 className="text-xl font-bold text-slate-900 mb-4">Tools & Technologies</h3>
+                    <h3 className="text-xl font-bold text-slate-900 mb-4">
+                      Tools & Technologies
+                    </h3>
                     <ul className="space-y-3">
                       {techStack.map((tech) => (
                         <li key={tech.name} className="flex items-start">
-                          <div className="flex-shrink-0 h-5 w-5 rounded-full mt-1" style={{ backgroundColor: brandColor }} />
+                          <div
+                            className="flex-shrink-0 h-5 w-5 rounded-full mt-1"
+                            style={{ backgroundColor: brandColor }}
+                          />
                           <div className="ml-3">
-                            <p className="font-semibold text-slate-800">{tech.name}</p>
-                            <p className="text-sm text-slate-600">{tech.description}</p>
+                            <p className="font-semibold text-slate-800">
+                              {tech.name}
+                            </p>
+                            <p className="text-sm text-slate-600">
+                              {tech.description}
+                            </p>
                           </div>
                         </li>
                       ))}
