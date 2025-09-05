@@ -177,7 +177,7 @@ const dragConstraintsRef = useRef<HTMLDivElement>(null!);
             <motion.div
               layout
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="w-full max-w-lg  h-auto max-h-[95%] rounded-lg shadow-lg overflow-x-scroll relative z-10 bg-white"
+              className="w-full max-w-lg  h-auto max-h-[95%] rounded-lg shadow-lg overflow-y-scroll overflow-x-hidden relative z-10 bg-white"
             >
               <PostCard
                 template={activeTemplate}
