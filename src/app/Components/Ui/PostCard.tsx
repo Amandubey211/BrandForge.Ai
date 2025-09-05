@@ -3,64 +3,111 @@
 
 import React, { forwardRef } from 'react';
 import Image from 'next/image';
-import { motion, Point } from 'framer-motion';
-
-// --- PROPS ---
-export type LayoutTemplate = 'default' | 'image-left'; // Define available templates
 
 interface PostCardProps {
   imagePreviewUrl: string | null;
   logoPreviewUrl: string | null;
-  headlineContent: string;
   bodyContent: string;
   hashtags: string[];
   brandColor: string;
-  logoPosition: Point;
-  headlinePosition: Point;
-  template: LayoutTemplate;
+  headlineContent: string;
+  headlinePosition: { x: number; y: number };
+  logoPosition: { x: number; y: number };
+  template: string;
 }
 
-// --- COMPONENT ---
 export const PostCard = forwardRef<HTMLDivElement, PostCardProps>(({
-  imagePreviewUrl, logoPreviewUrl, headlineContent, bodyContent, hashtags,
-  brandColor, logoPosition, headlinePosition, template
+  imagePreviewUrl,
+  logoPreviewUrl,
+  bodyContent,
+  hashtags,
+  brandColor,
+  headlineContent,
+  headlinePosition,
+  logoPosition,
+  template
 }, ref) => {
-  const textShadow = 'drop-shadow(0 2px 4px rgba(0,0,0,0.6))';
-
-  const ImageArea = () => (
-    <div className="w-full h-full relative">
-      {imagePreviewUrl ? (
-        <Image src={imagePreviewUrl} alt="Post image" fill className="object-contain" sizes="70vw" />
-      ) : (
-        <div className="absolute inset-0 bg-slate-200" />
-      )}
-      <motion.div className="absolute p-2 z-20" style={{ x: headlinePosition.x, y: headlinePosition.y, pointerEvents: 'none' }} dangerouslySetInnerHTML={{ __html: headlineContent }} />
-      {logoPreviewUrl && (<motion.div className="absolute w-16 h-16 p-1  rounded-lg  z-30" style={{ x: logoPosition.x, y: logoPosition.y, pointerEvents: 'none' }}><Image src={logoPreviewUrl} alt="Logo" fill className="object-contain" sizes="64px" /></motion.div>)}
-    </div>
-  );
-
-  const TextArea = () => (
-    <div className="flex flex-col h-full">
-      {bodyContent && (<div className="w-full p-6 bg-white text-slate-800 flex-grow" dangerouslySetInnerHTML={{ __html: bodyContent }} />)}
-      {hashtags.length > 0 && (<div className="w-full p-3 text-white text-sm font-medium" style={{ backgroundColor: brandColor }}><p>{hashtags.join(' ')}</p></div>)}
-    </div>
-  );
-
   return (
-    <div ref={ref} className="w-full h-full bg-white overflow-hidden">
-      {template === 'default' && (
-        <div className="flex flex-col h-full">
-          <div className="flex-grow relative"><ImageArea /></div>
-          <div className="flex-shrink-0"><TextArea /></div>
-        </div>
+    <div ref={ref} className="w-full h-full bg-black overflow-hidden flex flex-col relative">
+      {/* Blurred Background for object-contain effect */}
+      {imagePreviewUrl && (
+        <Image 
+          src={imagePreviewUrl} 
+          alt="Post background" 
+          fill 
+          className="object-cover z-0 scale-110 brightness-50" 
+          style={{ filter: 'blur(24px)' }}
+          sizes="70vw" 
+        />
       )}
-      {template === 'image-left' && (
-        <div className="grid grid-cols-2 h-full">
-          <div className="relative"><ImageArea /></div>
-          <div className="border-l border-slate-200"><TextArea /></div>
+      
+      {/* Main Content */}
+      <div className="relative z-10 flex flex-col h-full">
+        {/* 1. Main Image Area */}
+        <div className="w-full flex-grow relative flex items-center justify-center">
+          {imagePreviewUrl ? (
+            <Image 
+              src={imagePreviewUrl} 
+              alt="Post image" 
+              fill 
+              className="object-contain" 
+              sizes="70vw" 
+            />
+          ) : (
+            <div className="absolute inset-0 bg-slate-200" />
+          )}
+        </div>
+
+        {/* 2. Body Text Area */}
+        {bodyContent && (
+          <div 
+            className="w-full p-6 bg-white border-t border-slate-200 text-slate-800"
+            dangerouslySetInnerHTML={{ __html: bodyContent }}
+          />
+        )}
+
+        {/* 3. Hashtag Footer Area */}
+        {hashtags.length > 0 && (
+          <div className="w-full p-3 text-white text-sm font-medium" style={{ backgroundColor: brandColor }}>
+            <p>{hashtags.join(' ')}</p>
+          </div>
+        )}
+      </div>
+
+      {/* Interactive Elements (will be captured in download) */}
+      {headlineContent && (
+        <div 
+          className="absolute cursor-grab active:cursor-grabbing p-2 z-20"
+          style={{ 
+            left: headlinePosition.x, 
+            top: headlinePosition.y,
+            transform: 'translateZ(0)' // Force GPU rendering for crisp capture
+          }}
+          dangerouslySetInnerHTML={{ __html: headlineContent }}
+        />
+      )}
+      
+      {logoPreviewUrl && (
+        <div 
+          className="absolute cursor-grab active:cursor-grabbing group z-20"
+          style={{ 
+            left: logoPosition.x, 
+            top: logoPosition.y,
+            transform: 'translateZ(0)' // Force GPU rendering for crisp capture
+          }}
+        >
+          <div className="relative w-16 h-16 p-1 bg-white/50 rounded-lg backdrop-blur-sm">
+            <Image 
+              src={logoPreviewUrl} 
+              alt="Logo" 
+              fill 
+              className="object-contain" 
+            />
+          </div>
         </div>
       )}
     </div>
   );
 });
+
 PostCard.displayName = 'PostCard';
