@@ -8,7 +8,10 @@ import { AboutSection } from './Components/layout/AboutSection';
 import { Footer } from './Components/layout/Footer';
 
 interface FormData {
-  brandTone: string; postText: string; logoFile: File | null; imageFile: File | null;
+  brandTone: string;
+  postText: string;
+  logoFile: File | null;
+  imageFile: File | null;
 }
 
 const fileToJpegBase64 = (file: File): Promise<string> => {
@@ -20,12 +23,15 @@ const fileToJpegBase64 = (file: File): Promise<string> => {
       img.src = event.target?.result as string;
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        canvas.width = img.width; canvas.height = img.height;
+        canvas.width = img.width;
+        canvas.height = img.height;
         const ctx = canvas.getContext('2d');
         if (ctx) {
           ctx.drawImage(img, 0, 0);
           resolve(canvas.toDataURL('image/jpeg', 0.9));
-        } else reject(new Error('Could not get canvas context'));
+        } else {
+          reject(new Error('Could not get canvas context'));
+        }
       };
       img.onerror = (error) => reject(error);
     };
@@ -42,21 +48,29 @@ export default function Home() {
 
   const handleGenerate = async (formData: FormData) => {
     if (!formData.imageFile || !formData.postText) {
-      setError('Please provide an image and a core message.'); return;
+      setError('Please provide an image and a core message.');
+      return;
     }
-    setError(''); setIsLoading(true); setGeneratedPost(null);
+    setError('');
+    setIsLoading(true);
+    setGeneratedPost(null);
     try {
       const base64Image = await fileToJpegBase64(formData.imageFile);
       const response = await fetch('/api/generate-post', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          postText: formData.postText, brandTone: formData.brandTone,
-          brandColor: brandColor, base64Image: base64Image.split(',')[1],
+          postText: formData.postText,
+          brandTone: formData.brandTone,
+          brandColor: brandColor,
+          base64Image: base64Image.split(',')[1],
           mimeType: 'image/jpeg',
         }),
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Something went wrong.');
+      if (!response.ok) {
+        throw new Error(data.error || 'Something went wrong.');
+      }
       setGeneratedPost(data.generatedPost);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'An unknown error occurred.');
@@ -66,17 +80,22 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 bg-grid">
+    <div className="min-h-screen bg-slate-50 text-slate-800">
       <Header brandColor={brandColor} />
-      <HeroSection brandColor={brandColor} setBrandColor={setBrandColor} generatorRef={playgroundRef} />
-      <div id="generator" ref={playgroundRef} className='md:px-10'>
-        <Playground
-          brandColor={brandColor} setBrandColor={setBrandColor}
-          onGenerate={handleGenerate} isLoading={isLoading}
-          generatedPost={generatedPost} error={error}
-        />
-      </div>
-      <AboutSection brandColor={brandColor} />
+      <main>
+        <HeroSection brandColor={brandColor} setBrandColor={setBrandColor} generatorRef={playgroundRef} />
+        <div id="generator" ref={playgroundRef} className='p-4 md:p-10'>
+          <Playground
+            brandColor={brandColor}
+            setBrandColor={setBrandColor}
+            onGenerate={handleGenerate}
+            isLoading={isLoading}
+            generatedPost={generatedPost}
+            error={error}
+          />
+        </div>
+        <AboutSection brandColor={brandColor} />
+      </main>
       <Footer brandColor={brandColor} />
     </div>
   );

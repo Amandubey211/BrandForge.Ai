@@ -1,522 +1,284 @@
 'use client';
 
-import React, { useState, useRef, ChangeEvent, ReactNode, useEffect } from 'react';
-import Image from 'next/image';
+import React, { useState, useRef, ChangeEvent, useEffect } from 'react';
 import { motion, AnimatePresence, Point } from 'framer-motion';
 import { toPng } from 'html-to-image';
 import { toast } from 'sonner';
-import { Copy, Download, Sparkles, UploadCloud, FileCheck2, X, Move, Bot, Wand2, Info, ChevronDown, Eye, Square, Columns, PanelRight, Layers, Grid } from 'lucide-react';
-import { PostCard } from '../Ui/PostCard';
+import Confetti from 'react-confetti';
+import { Copy, Download, Eye, FileCheck2, FileImage, Palette, PanelRight, Send, Square, UploadCloud, X, Layers, Columns } from 'lucide-react';
+import { PostCard, LayoutTemplate } from '../Ui/PostCard'; // Import type from PostCard
 import { Modal } from '../Ui/Modal';
-import dynamic from 'next/dynamic';
 
-// Dynamically import JoditEditor to avoid SSR issues
-const JoditEditor = dynamic(() => import('jodit-react'), { ssr: false });
+// --- HOOKS ---
+const useWindowSize = () => {
+    const [size, setSize] = useState([0, 0]);
+    useEffect(() => {
+        function updateSize() {
+            setSize([window.innerWidth, window.innerHeight]);
+        }
+        window.addEventListener('resize', updateSize);
+        updateSize();
+        return () => window.removeEventListener('resize', updateSize);
+    }, []);
+    return { width: size[0], height: size[1] };
+};
 
 // Helper function to convert a File to a base64 data URL
-const fileToBase64 = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
+const fileToBase64 = (file: File): Promise<string> => new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => resolve(reader.result as string);
     reader.onerror = (error) => reject(error);
-  });
-};
+});
 
 // --- INTERFACES ---
 export interface PostData {
-  headline: string;
-  body: string;
-  hashtags: string[];
-  layout: {
-    theme: 'light' | 'dark';
-    textPosition: string;
-    logoPosition: string;
-    styleSuggestion: string;
-  };
+    headline: string;
+    body: string;
+    hashtags: string[];
 }
 interface FormData {
-  brandTone: string;
-  postText: string;
-  logoFile: File | null;
-  imageFile: File | null;
+    brandTone: string;
+    postText: string;
+    logoFile: File | null;
+    imageFile: File | null;
 }
 interface PlaygroundProps {
-  brandColor: string;
-  setBrandColor: (color: string) => void;
-  onGenerate: (data: FormData) => void;
-  isLoading: boolean;
-  generatedPost: PostData | null;
-  error: string;
+    brandColor: string;
+    setBrandColor: (color: string) => void;
+    onGenerate: (data: FormData) => void;
+    isLoading: boolean;
+    generatedPost: PostData | null;
+    error: string;
 }
-
-type LayoutTemplate = 'default' | 'image-left' | 'text-overlay' | 'footer-focus';
 
 // --- MAIN COMPONENT ---
 export const Playground: React.FC<PlaygroundProps> = ({
-  brandColor, setBrandColor, onGenerate, isLoading, generatedPost, error,
+    brandColor, setBrandColor, onGenerate, isLoading, generatedPost, error,
 }) => {
-  const [formData, setFormData] = useState<FormData>({ brandTone: 'Friendly & Professional', postText: '', logoFile: null, imageFile: null });
-  const [imageBase64, setImageBase64] = useState<string | null>(null);
-  const [logoBase64, setLogoBase64] = useState<string | null>(null);
-  const canvasRef = useRef<HTMLDivElement>(null);
-  const dragConstraintsRef = useRef<HTMLDivElement>(null);
-  const [activeAccordion, setActiveAccordion] = useState<string | null>('templates');
-  
-  const [headlineContent, setHeadlineContent] = useState('');
-  const [bodyContent, setBodyContent] = useState('');
-  const [logoPosition, setLogoPosition] = useState<Point>({ x: 20, y: 20 });
-  const [headlinePosition, setHeadlinePosition] = useState<Point>({ x: 20, y: 200 });
-  const [modalContent, setModalContent] = useState<string | null>(null);
-  const [activeTemplate, setActiveTemplate] = useState<LayoutTemplate>('default');
-  const [isPanelOpen, setIsPanelOpen] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const [isEditingHeadline, setIsEditingHeadline] = useState(false);
-  const [isEditingBody, setIsEditingBody] = useState(false);
+    const [formData, setFormData] = useState<FormData>({ brandTone: 'Friendly & Professional', postText: '', logoFile: null, imageFile: null });
+    const [imageBase64, setImageBase64] = useState<string | null>(null);
+    const [logoBase64, setLogoBase64] = useState<string | null>(null);
+    const canvasRef = useRef<HTMLDivElement>(null);
+    const modalCanvasRef = useRef<HTMLDivElement>(null);
+    const dragConstraintsRef = useRef<HTMLDivElement>(null);
+    const [activeTemplate, setActiveTemplate] = useState<LayoutTemplate>('default');
 
-  useEffect(() => {
-    if (generatedPost) {
-      setHeadlineContent(`<h2 class="font-extrabold text-2xl leading-tight" style="color: ${brandColor}; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));">${generatedPost.headline}</h2>`);
-      setBodyContent(`<p class="text-base">${generatedPost.body}</p>`);
-      setActiveAccordion('customize');
-      setIsPanelOpen(false);
-    }
-  }, [generatedPost, brandColor]);
+    const [displayContent, setDisplayContent] = useState<PostData>({ headline: '', body: '', hashtags: [] });
+    const [logoPosition, setLogoPosition] = useState<Point>({ x: 20, y: 20 });
+    const [headlinePosition, setHeadlinePosition] = useState<Point>({ x: 20, y: 150 });
+    
+    const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+    const [showConfetti, setShowConfetti] = useState(false);
+    const { width, height } = useWindowSize();
 
-  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>, type: 'logo' | 'image') => {
-    const file = e.target.files?.[0] || null;
-    const stateKey = type === 'logo' ? 'logoFile' : 'imageFile';
-    setFormData(prev => ({ ...prev, [stateKey]: file }));
-    if (file) {
-      const base64 = await fileToBase64(file);
-      if (type === 'logo') setLogoBase64(base64);
-      else setImageBase64(base64);
-    } else handleRemoveFile(type);
-  };
+    const MAX_CHARS = 1000;
 
-  const handleRemoveFile = (type: 'logo' | 'image') => {
-    const stateKey = type === 'logo' ? 'logoFile' : 'imageFile';
-    setFormData(prev => ({ ...prev, [stateKey]: null }));
-    if (type === 'logo') setLogoBase64(null);
-    else setImageBase64(null);
-  };
-  
-  const handleCopy = () => {
-    if (!generatedPost) return;
-    const fullText = `${generatedPost.headline}\n\n${generatedPost.body}\n\n${generatedPost.hashtags.join(' ')}`;
-    navigator.clipboard.writeText(fullText);
-    toast.success('Post text copied to clipboard!');
-  };
-  
-  const handleDownload = async () => {
-    if (!canvasRef.current) return toast.error("Canvas element not found.");
-    const toastId = toast.loading("Preparing your download...");
-    try {
-      const dataUrl = await toPng(canvasRef.current, { 
-        cacheBust: true, 
-        pixelRatio: 2,
-        backgroundColor: '#000000'
-      });
-      const link = document.createElement('a');
-      link.download = `partyhub-post-${Date.now()}.png`;
-      link.href = dataUrl;
-      link.click();
-      toast.success("Download started!", { id: toastId });
-    } catch (err) {
-      console.error('Failed to download image', err);
-      toast.error("Failed to create image. Please try again.", { id: toastId });
-    }
-  };
-  
-  const isFormComplete = !!(formData.logoFile && formData.imageFile && formData.postText.trim());
-  const canvasAspectRatio = activeTemplate === 'default' ? '4/5' : activeTemplate === 'image-left' ? '16/9' : activeTemplate === 'text-overlay' ? '4/5' : '4/5';
+    useEffect(() => {
+        if (generatedPost) {
+            setDisplayContent({
+                headline: generatedPost.headline,
+                body: generatedPost.body,
+                hashtags: generatedPost.hashtags,
+            });
+            setShowConfetti(true);
+            const timer = setTimeout(() => setShowConfetti(false), 6000); // Confetti for 6 seconds
+            return () => clearTimeout(timer);
+        }
+    }, [generatedPost]);
 
-  const ControlPanelContent = () => (
-    <>
-      <div className="flex-grow overflow-y-auto p-4 space-y-2">
-        <AccordionItem title="1. Layout Templates" id="templates" activeId={activeAccordion} setActiveId={setActiveAccordion}>
-          <div className="p-4">
-            <TemplateSelector activeTemplate={activeTemplate} onSelect={setActiveTemplate} />
-          </div>
-        </AccordionItem>
-        <AccordionItem title="2. Brand Identity" id="brand" activeId={activeAccordion} setActiveId={setActiveAccordion}>
-          <div className="space-y-4 p-4">
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Primary Brand Color</label>
-              <div className="relative">
-                <input 
-                  type="text" 
-                  value={brandColor} 
-                  onChange={(e) => setBrandColor(e.target.value)} 
-                  className="w-full pl-12 pr-4 py-2 border border-slate-300 rounded-md focus:ring-2" 
-                  style={{ borderColor: brandColor, boxShadow: `0 0 0 2px ${brandColor}20` }} 
-                />
-                <input 
-                  type="color" 
-                  value={brandColor} 
-                  onChange={(e) => setBrandColor(e.target.value)} 
-                  className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 p-0 border-none cursor-pointer" 
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Brand Tone</label>
-              <select 
-                value={formData.brandTone} 
-                onChange={(e) => setFormData(p => ({...p, brandTone: e.target.value}))} 
-                className="w-full px-4 py-2 border border-slate-300 rounded-md"
-              >
-                <option>Friendly & Professional</option>
-                <option>Whimsical & Playful</option>
-                <option>Elegant & Luxurious</option>
-                <option>Modern & Minimalistic</option>
-              </select>
-            </div>
-            <FileInput 
-              label="Brand Logo" 
-              file={formData.logoFile} 
-              onFileChange={(e) => handleFileChange(e, 'logo')} 
-              onRemove={() => handleRemoveFile('logo')} 
-              onView={() => setModalContent(logoBase64)} 
-            />
-          </div>
-        </AccordionItem>
-        <AccordionItem title="3. Post Content" id="content" activeId={activeAccordion} setActiveId={setActiveAccordion}>
-          <div className="space-y-4 p-4">
-            <FileInput 
-              label="Your Image" 
-              file={formData.imageFile} 
-              onFileChange={(e) => handleFileChange(e, 'image')} 
-              onRemove={() => handleRemoveFile('image')} 
-              onView={() => setModalContent(imageBase64)} 
-            />
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Your Core Message</label>
-              <textarea 
-                rows={4} 
-                value={formData.postText} 
-                onChange={(e) => setFormData(p => ({...p, postText: e.target.value}))} 
-                className="w-full px-4 py-2 border border-slate-300 rounded-md shadow-sm" 
-                placeholder="e.g., Our new spring floral arrangements..."
-              />
-            </div>
-          </div>
-        </AccordionItem>
-        <AnimatePresence>
-          {generatedPost && (
-            <AccordionItem title="4. Customize" id="customize" activeId={activeAccordion} setActiveId={setActiveAccordion}>
-              <div className="p-4 space-y-4">
-                <div className="flex items-start gap-2 p-3 bg-slate-100 rounded-lg text-slate-600">
-                  <Info className="h-4 w-4 mt-0.5 flex-shrink-0"/>
-                  <p className="text-xs">You can now click the text on the canvas to edit it, and drag the headline and logo to move them!</p>
+    const handleFileChange = async (e: ChangeEvent<HTMLInputElement>, type: 'logo' | 'image') => {
+        const file = e.target.files?.[0] || null;
+        setFormData(prev => ({ ...prev, [type === 'logo' ? 'logoFile' : 'imageFile']: file }));
+        if (file) {
+            const base64 = await fileToBase64(file);
+            if (type === 'logo') setLogoBase64(base64); else setImageBase64(base64);
+        } else {
+            if (type === 'logo') setLogoBase64(null); else setImageBase64(null);
+        }
+    };
+    
+    const handleRemoveFile = (type: 'logo' | 'image') => {
+        setFormData(prev => ({ ...prev, [type === 'logo' ? 'logoFile' : 'imageFile']: null }));
+        if (type === 'logo') setLogoBase64(null); else setImageBase64(null);
+    };
+
+    const handleDownload = async () => {
+        const refToUse = isPreviewModalOpen ? modalCanvasRef : canvasRef;
+        if (!refToUse.current) return toast.error("Canvas element not found.");
+        const toastId = toast.loading("Generating your high-res image...");
+        try {
+            const dataUrl = await toPng(refToUse.current, { cacheBust: true, pixelRatio: 2 });
+            const link = document.createElement('a');
+            link.download = `partyhub-post-${Date.now()}.png`;
+            link.href = dataUrl;
+            link.click();
+            toast.success("Download started!", { id: toastId });
+        } catch (err) {
+            toast.error("Failed to create image. Please try again.", { id: toastId });
+        }
+    };
+
+    const isFormComplete = !!(formData.imageFile && formData.postText.trim() && formData.postText.length <= MAX_CHARS);
+
+    return (
+        <>
+            {showConfetti && <Confetti width={width} height={height} recycle={false} numberOfPieces={400} />}
+            <div className="h-[90vh] bg-white border border-slate-200 rounded-2xl shadow-2xl shadow-indigo-500/10 flex flex-col overflow-hidden">
+                <div className="flex flex-grow min-h-0">
+                    {/* --- LEFT INPUT COLUMN --- */}
+                    <div className="w-full max-w-xs p-5 border-r border-slate-200 flex flex-col space-y-6 overflow-y-auto">
+                        <div>
+                            <h3 className="text-md font-semibold text-slate-800 mb-3 flex items-center gap-2"><Palette size={16} /> Brand Identity</h3>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="text-sm font-medium text-slate-600 mb-1 block">Color</label>
+                                    <input type="color" value={brandColor} onChange={(e) => setBrandColor(e.target.value)} className="w-full h-10 p-0 border-none cursor-pointer rounded-md" />
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-slate-600 mb-1 block">Tone</label>
+                                    <select value={formData.brandTone} onChange={(e) => setFormData(p => ({ ...p, brandTone: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm">
+                                        <option>💼 Friendly & Professional</option>
+                                        <option>🎉 Whimsical & Playful</option>
+                                        <option>💎 Elegant & Luxurious</option>
+                                        <option>✨ Modern & Minimalistic</option>
+                                    </select>
+                                </div>
+                                <FileInputCompact label="Logo" file={formData.logoFile} onFileChange={(e) => handleFileChange(e, 'logo')} onRemove={() => handleRemoveFile('logo')} />
+                            </div>
+                        </div>
+                        <div className="border-t border-slate-200 pt-6">
+                            <h3 className="text-md font-semibold text-slate-800 mb-3 flex items-center gap-2"><FileImage size={16} /> Post Image</h3>
+                            <FileInputCompact label="Your Image" file={formData.imageFile} onFileChange={(e) => handleFileChange(e, 'image')} onRemove={() => handleRemoveFile('image')} />
+                        </div>
+                    </div>
+
+                    {/* --- MIDDLE PREVIEW COLUMN --- */}
+                    <div ref={dragConstraintsRef} className="flex-grow flex items-center justify-center p-6 bg-slate-50 relative">
+                         {generatedPost && (
+                            <button onClick={() => setIsPreviewModalOpen(true)} className="absolute top-4 right-4 z-20 p-2 bg-white/80 backdrop-blur-sm rounded-full hover:bg-white transition shadow-lg">
+                                <Eye size={20} className="text-slate-700"/>
+                            </button>
+                         )}
+                        <motion.div
+                            layout
+                            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                            className="w-full max-w-sm h-auto max-h-[95%] rounded-lg shadow-lg overflow-hidden relative z-10 bg-white"
+                            style={{ aspectRatio: getAspectRatio(activeTemplate) }}
+                        >
+                            <PostCard
+                                ref={canvasRef}
+                                template={activeTemplate}
+                                imagePreviewUrl={imageBase64}
+                                logoPreviewUrl={logoBase64}
+                                displayContent={displayContent}
+                                brandColor={brandColor}
+                                headlinePosition={headlinePosition}
+                                logoPosition={logoPosition}
+                                onHeadlinePositionChange={setHeadlinePosition}
+                                onLogoPositionChange={setLogoPosition}
+                                dragConstraintsRef={dragConstraintsRef}
+                            />
+                        </motion.div>
+                    </div>
+
+                    {/* --- RIGHT LAYOUT COLUMN --- */}
+                    <div className="w-32 p-4 border-l border-slate-200 overflow-y-auto">
+                        <h3 className="text-sm font-semibold text-slate-600 mb-4 text-center">Layout</h3>
+                        <TemplateSelector activeTemplate={activeTemplate} onSelect={setActiveTemplate} />
+                    </div>
                 </div>
-                
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Edit Headline</label>
-                  <button 
-                    onClick={() => setIsEditingHeadline(true)} 
-                    className="w-full px-4 py-2 border border-slate-300 rounded-md text-left bg-white hover:bg-slate-50"
-                  >
-                    Click to edit headline...
-                  </button>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Edit Body Text</label>
-                  <button 
-                    onClick={() => setIsEditingBody(true)} 
-                    className="w-full px-4 py-2 border border-slate-300 rounded-md text-left bg-white hover:bg-slate-50"
-                  >
-                    Click to edit body text...
-                  </button>
-                </div>
-              </div>
-            </AccordionItem>
-          )}
-        </AnimatePresence>
-      </div>
-      <div className="p-4 border-t border-slate-200 space-y-4 flex-shrink-0">
-         <button 
-           onClick={() => onGenerate(formData)} 
-           disabled={!isFormComplete || isLoading} 
-           className="w-full flex items-center justify-center gap-2 rounded-md py-3 px-4 font-semibold text-white transition hover:opacity-90 active:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed" 
-           style={{ backgroundColor: brandColor }}
-         >
-            {isLoading ? "Generating..." : <><Bot className="h-5 w-5"/> {generatedPost ? "Regenerate" : "Generate Post"}</>}
-         </button>
-         <AnimatePresence>
-           {generatedPost && (
-             <motion.div 
-               className="flex items-center justify-center gap-4" 
-               initial={{ opacity: 0, height: 0 }} 
-               animate={{ opacity: 1, height: 'auto' }} 
-               exit={{ opacity: 0, height: 0 }}
-             >
-               <button 
-                 onClick={handleCopy} 
-                 className="flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors w-1/2 justify-center"
-               >
-                 <Copy className="h-4 w-4" /> Copy Text
-               </button>
-               <button 
-                 onClick={handleDownload} 
-                 className="flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium text-white transition-colors w-1/2 justify-center" 
-                 style={{ backgroundColor: brandColor }}
-               >
-                 <Download className="h-4 w-4" /> Download
-               </button>
-             </motion.div>
-           )}
-         </AnimatePresence>
-         {error && <p className="text-red-500 text-sm">{error}</p>}
-      </div>
-    </>
-  );
 
-  return (
-    <>
-      <main className="min-h-screen bg-white">
-        <div className="flex flex-col lg:flex-row h-screen">
-          {/* --- LEFT CONTROL PANEL (Desktop) --- */}
-          <div className="hidden lg:flex w-full max-w-md bg-white border-r border-slate-200 shadow-xl flex-col h-screen">
-            <div className="p-4 border-b border-slate-200 flex-shrink-0 flex items-center gap-2">
-              <h2 className="text-xl font-bold">PartyHub Generator</h2>
+                {/* --- BOTTOM INPUT & ACTIONS ROW --- */}
+                <div className="flex-shrink-0 border-t border-slate-200 bg-white p-4 space-y-3">
+                    <div className="relative w-full max-w-4xl mx-auto">
+                        <textarea
+                            rows={2}
+                            value={formData.postText}
+                            onChange={(e) => setFormData(p => ({ ...p, postText: e.target.value }))}
+                            className="w-full px-4 py-3 pr-28 border border-slate-300 rounded-xl shadow-sm resize-none focus:ring-2 focus:ring-indigo-500 transition"
+                            placeholder="Enter your core message here... (e.g., Announcing our new summer collection!)"
+                            maxLength={MAX_CHARS}
+                        />
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                            <span className={`text-xs font-mono ${formData.postText.length >= MAX_CHARS ? 'text-red-500' : 'text-slate-400'}`}>
+                                {formData.postText.length}/{MAX_CHARS}
+                            </span>
+                            <button onClick={() => onGenerate(formData)} disabled={!isFormComplete || isLoading} className="p-2 rounded-lg text-white transition disabled:opacity-50 disabled:cursor-not-allowed" style={{ backgroundColor: brandColor }}>
+                                {isLoading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Send size={20} />}
+                            </button>
+                        </div>
+                    </div>
+                    {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+                    <AnimatePresence>
+                        {generatedPost && (
+                            <motion.div className="flex items-center justify-center gap-4" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
+                                <button onClick={() => navigator.clipboard.writeText(`${displayContent.headline}\n\n${displayContent.body}\n\n${displayContent.hashtags.join(' ')}`).then(() => toast.success('Post text copied!'))} className="flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors w-40 justify-center">
+                                    <Copy className="h-4 w-4" /> Copy Text
+                                </button>
+                                <button onClick={handleDownload} className="flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium text-white transition-colors w-40 justify-center" style={{ backgroundColor: brandColor }}>
+                                    <Download className="h-4 w-4" /> Download
+                                </button>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
             </div>
-            <ControlPanelContent />
-          </div>
-          
-          {/* --- RIGHT CANVAS --- */}
-          <div ref={dragConstraintsRef} className="flex-grow flex items-center justify-center p-4 lg:p-8  relative h-screen">
-            {/* Grid background */}
-            <div className="absolute inset-0 bg-[length:20px_20px] bg-repeat" style={{ backgroundImage: 'linear-gradient(to right, #e5e7eb 1px, transparent 1px), linear-gradient(to bottom, #e5e7eb 1px, transparent 1px)' }}></div>
             
-            <motion.div
-              layout
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="w-full max-w-xl rounded-lg shadow-2xl overflow-hidden relative z-10"
-              style={{ aspectRatio: canvasAspectRatio }}
-            >
-              <div ref={canvasRef} className="w-full h-full">
-                <PostCard 
-                  template={activeTemplate} 
-                  imagePreviewUrl={imageBase64} 
-                  logoPreviewUrl={logoBase64} 
-                  bodyContent={bodyContent} 
-                  hashtags={generatedPost?.hashtags || []} 
-                  brandColor={brandColor} 
-                  headlinePosition={headlinePosition} 
-                  logoPosition={logoPosition} 
-                  headlineContent={headlineContent} 
-                  onHeadlinePositionChange={setHeadlinePosition}
-                  onLogoPositionChange={setLogoPosition}
-                  dragConstraintsRef={dragConstraintsRef}
-                  onHeadlineDoubleClick={() => setIsEditingHeadline(true)}
-                />
-              </div>
-            </motion.div>
-
-            {isLoading && (
-              <div className="absolute inset-0 flex items-center justify-center z-50">
-                <motion.div
-                  className="w-full max-w-xl rounded-lg bg-slate-200 overflow-hidden"
-                  style={{ aspectRatio: canvasAspectRatio }}
-                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                >
-                  <div className="w-full h-full animate-pulse bg-slate-300" />
-                </motion.div>
-              </div>
-            )}
-          </div>
-          
-          {/* --- FLOATING ACTION BUTTON (Mobile) --- */}
-          <button 
-            onClick={() => setIsPanelOpen(true)} 
-            className="lg:hidden fixed bottom-4 right-4 z-30 flex items-center gap-2 rounded-full bg-indigo-600 text-white px-4 py-3 shadow-lg"
-          >
-            <Sparkles className="h-5 w-5"/> Controls
-          </button>
-        </div>
-      </main>
-
-      {/* --- SLIDE-OVER PANEL (Mobile) --- */}
-      <AnimatePresence>
-        {isPanelOpen && (
-          <motion.div className="lg:hidden fixed inset-0 z-40 flex justify-end">
-            <motion.div 
-              onClick={() => setIsPanelOpen(false)} 
-              className="absolute inset-0 bg-black/40" 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              exit={{ opacity: 0 }}
-            />
-            <motion.div 
-              className="relative w-full max-w-sm bg-white h-full flex flex-col" 
-              initial={{ x: '100%' }} 
-              animate={{ x: '0%' }} 
-              exit={{ x: '100%' }} 
-              transition={{ type: 'spring', stiffness: 400, damping: 40 }}
-            >
-              <div className="p-4 border-b border-slate-200 flex-shrink-0 flex justify-between items-center">
-                <h2 className="text-xl font-bold">Control Panel</h2>
-                <button onClick={() => setIsPanelOpen(false)}>
-                  <X className="h-5 w-5"/>
-                </button>
-              </div>
-              <ControlPanelContent />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      
-      {/* --- EDITOR MODALS --- */}
-      <Modal 
-        isOpen={isEditingHeadline} 
-        onClose={() => setIsEditingHeadline(false)} 
-        title="Edit Headline"
-      >
-        <div className="h-64">
-          <JoditEditor
-            value={headlineContent.replace(/<h2[^>]*>|<\/h2>/g, '')}
-            onBlur={(newContent) => {
-              setHeadlineContent(`<h2 class="font-extrabold text-2xl leading-tight" style="color: ${brandColor}; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));">${newContent}</h2>`);
-            }}
-            config={{
-              toolbarAdaptive: false,
-              toolbarButtonSize: 'medium',
-              buttons: 'bold,italic,underline,font,fontsize,align,undo,redo',
-            }}
-          />
-        </div>
-        <div className="mt-4 flex justify-end">
-          <button 
-            onClick={() => setIsEditingHeadline(false)} 
-            className="px-4 py-2 bg-indigo-600 text-white rounded-md"
-          >
-            Done
-          </button>
-        </div>
-      </Modal>
-      
-      <Modal 
-        isOpen={isEditingBody} 
-        onClose={() => setIsEditingBody(false)} 
-        title="Edit Body Text"
-      >
-        <div className="h-64">
-          <JoditEditor
-            value={bodyContent.replace(/<p[^>]*>|<\/p>/g, '')}
-            onBlur={(newContent) => {
-              setBodyContent(`<p class="text-base">${newContent}</p>`);
-            }}
-            config={{
-              toolbarAdaptive: false,
-              toolbarButtonSize: 'medium',
-              buttons: 'bold,italic,underline,font,fontsize,align,ul,ol,undo,redo',
-            }}
-          />
-        </div>
-        <div className="mt-4 flex justify-end">
-          <button 
-            onClick={() => setIsEditingBody(false)} 
-            className="px-4 py-2 bg-indigo-600 text-white rounded-md"
-          >
-            Done
-          </button>
-        </div>
-      </Modal>
-      
-      <Modal isOpen={!!modalContent} onClose={() => setModalContent(null)} imageUrl={modalContent} />
-    </>
-  );
+            {/* --- PREVIEW MODAL --- */}
+            <Modal isOpen={isPreviewModalOpen} onClose={() => setIsPreviewModalOpen(false)} title="Full Post Preview">
+                <div className="w-[600px] h-auto" style={{ aspectRatio: getAspectRatio(activeTemplate)}}>
+                    <PostCard
+                        ref={modalCanvasRef}
+                        template={activeTemplate}
+                        imagePreviewUrl={imageBase64}
+                        logoPreviewUrl={logoBase64}
+                        displayContent={displayContent}
+                        brandColor={brandColor}
+                        headlinePosition={headlinePosition}
+                        logoPosition={logoPosition}
+                        onHeadlinePositionChange={setHeadlinePosition}
+                        onLogoPositionChange={setLogoPosition}
+                        dragConstraintsRef={dragConstraintsRef}
+                    />
+                </div>
+                <div className="mt-6 flex justify-end">
+                    <button onClick={handleDownload} className="flex items-center gap-2 rounded-md px-6 py-2 text-sm font-medium text-white transition-colors justify-center" style={{ backgroundColor: brandColor }}>
+                        <Download className="h-4 w-4" /> Download Image
+                    </button>
+                </div>
+            </Modal>
+        </>
+    );
 };
 
 // --- HELPER COMPONENTS ---
-const AccordionItem = ({ id, title, activeId, setActiveId, children }: { id: string, title: string, activeId: string | null, setActiveId: (id: string | null) => void, children: ReactNode }) => {
-  const isOpen = id === activeId;
-  return (
-    <div className="border border-slate-200 rounded-lg overflow-hidden">
-      <button onClick={() => setActiveId(isOpen ? null : id)} className="w-full flex justify-between items-center p-4 bg-slate-50 hover:bg-slate-100 transition-colors">
-        <h3 className="font-semibold text-slate-800">{title}</h3>
-        <motion.div animate={{ rotate: isOpen ? 180 : 0 }}><ChevronDown className="h-5 w-5 text-slate-500"/></motion.div>
-      </button>
-      <AnimatePresence initial={false}>
-        {isOpen && <motion.section initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="overflow-hidden">{children}</motion.section>}
-      </AnimatePresence>
-    </div>
-  );
-};
+
+const getAspectRatio = (template: LayoutTemplate) => template === 'image-left' ? '16/9' : '4/5';
 
 const TemplateSelector = ({ activeTemplate, onSelect }: { activeTemplate: LayoutTemplate, onSelect: (template: LayoutTemplate) => void }) => {
-  const templates = [
-    { id: 'default', name: 'Default', icon: Square },
-    { id: 'image-left', name: 'Split Left', icon: Columns },
-    { id: 'text-overlay', name: 'Overlay', icon: Layers },
-    { id: 'footer-focus', name: 'Footer Focus', icon: PanelRight },
-  ] as const;
-
-  return (
-    <div className="grid grid-cols-2 gap-2">
-      {templates.map(template => (
-        <button 
-          key={template.id} 
-          onClick={() => onSelect(template.id)} 
-          className={`relative flex flex-col items-center justify-center p-2 border-2 rounded-md transition-colors ${activeTemplate === template.id ? 'border-indigo-500 bg-indigo-50' : 'border-slate-200 hover:border-slate-300'}`}
-        >
-          <template.icon className="h-8 w-8 text-slate-500 mb-1" />
-          <span className="text-xs font-semibold">{template.name}</span>
-          {activeTemplate === template.id && (
-            <motion.div layoutId="template-active-indicator" className="absolute inset-0 border-2 border-indigo-500 rounded-md" />
-          )}
-        </button>
-      ))}
-    </div>
-  );
+    const templates = [
+        { id: 'default', name: 'Standard', icon: Square }, { id: 'image-left', name: 'Split', icon: Columns },
+        { id: 'text-overlay', name: 'Overlay', icon: Layers }, { id: 'footer-focus', name: 'Footer', icon: PanelRight },
+    ] as const;
+    return (
+        <div className="space-y-2">
+            {templates.map(t => <button key={t.id} onClick={() => onSelect(t.id)} className={`w-full flex flex-col items-center justify-center p-3 border-2 rounded-md transition-all ${activeTemplate===t.id?'border-indigo-500 bg-indigo-50 shadow-inner':'border-slate-200 hover:border-slate-300 hover:bg-slate-50'}`}><t.icon className={`h-6 w-6 mb-1 ${activeTemplate===t.id?'text-indigo-600':'text-slate-500'}`}/><span className={`text-xs font-semibold ${activeTemplate===t.id?'text-indigo-800':'text-slate-700'}`}>{t.name}</span></button>)}
+        </div>
+    );
 };
 
-const FileInput = ({ label, file, onFileChange, onRemove, onView }: { label: string; file: File | null; onFileChange: (e: ChangeEvent<HTMLInputElement>) => void; onRemove: () => void; onView: () => void; }) => (
-  <div>
-    <label className="block text-sm font-semibold text-slate-700 mb-2">{label}</label>
-    <div className="relative">
-      <label className="cursor-pointer bg-slate-50 border-2 border-dashed rounded-lg p-4 flex flex-col items-center justify-center min-h-[120px] hover:bg-slate-100 transition-colors text-center">
-        <AnimatePresence mode="wait">
-          {file ? (
-            <motion.div key="selected" className="flex flex-col items-center" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }}>
-              <FileCheck2 className="h-8 w-8 text-green-500 mb-1" />
-              <span className="text-sm font-medium text-slate-700 truncate max-w-[200px]">{file.name}</span>
-            </motion.div>
-          ) : (
-            <motion.div key="empty" className="flex flex-col items-center" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }}>
-              <UploadCloud className="h-8 w-8 text-slate-400 mb-1" />
-              <span className="text-sm font-medium text-slate-600">Click to upload</span>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        <input type="file" className="hidden" onChange={onFileChange} accept="image/*" />
-      </label>
-      {file && (
-        <div className="absolute -top-2 -right-2 flex items-center gap-1.5">
-           <motion.button 
-             onClick={(e) => { e.preventDefault(); onView(); }} 
-             className="bg-slate-600 text-white rounded-full p-1 hover:bg-slate-800 transition-colors" 
-             initial={{ scale: 0, opacity: 0 }} 
-             animate={{ scale: 1, opacity: 1 }} 
-             exit={{ scale: 0, opacity: 0 }} 
-             aria-label="View file"
-           >
-             <Eye className="h-3 w-3" />
-           </motion.button>
-           <motion.button 
-             onClick={(e) => { e.preventDefault(); onRemove(); }} 
-             className="bg-slate-600 text-white rounded-full p-1 hover:bg-slate-800 transition-colors" 
-             initial={{ scale: 0, opacity: 0 }} 
-             animate={{ scale: 1, opacity: 1 }} 
-             exit={{ scale: 0, opacity: 0 }} 
-             aria-label="Remove file"
-           >
-             <X className="h-3 w-3" />
-           </motion.button>
+const FileInputCompact = ({ label, file, onFileChange, onRemove }: { label: string; file: File | null; onFileChange: (e: ChangeEvent<HTMLInputElement>) => void; onRemove: () => void; }) => (
+    <div>
+        <label className="text-sm font-medium text-slate-600 mb-1 block">{label}</label>
+        <div className="relative">
+            <label className="cursor-pointer bg-slate-50 border-2 border-dashed rounded-lg p-3 flex items-center justify-center min-h-[60px] hover:bg-slate-100 transition-colors text-center">
+                <AnimatePresence mode="wait">
+                    {file?(<motion.div key="s" className="flex items-center gap-2" initial={{scale:0.8,opacity:0}} animate={{scale:1,opacity:1}}><FileCheck2 className="h-5 w-5 text-green-500"/><span className="text-xs font-medium text-slate-700 truncate max-w-[150px]">{file.name}</span></motion.div>):(<motion.div key="e" className="flex items-center gap-2" initial={{scale:0.8,opacity:0}} animate={{scale:1,opacity:1}}><UploadCloud className="h-5 w-5 text-slate-400"/><span className="text-sm font-medium text-slate-600">Upload</span></motion.div>)}
+                </AnimatePresence>
+                <input type="file" className="hidden" onChange={onFileChange} accept="image/*" />
+            </label>
+            {file&&<motion.button onClick={(e)=>{e.preventDefault();onRemove();}} className="absolute top-1 right-1 bg-slate-600 text-white rounded-full p-0.5 hover:bg-slate-800 transition-colors" initial={{scale:0,opacity:0}} animate={{scale:1,opacity:1}} aria-label="Remove file"><X className="h-3 w-3"/></motion.button>}
         </div>
-      )}
     </div>
-  </div>
 );
