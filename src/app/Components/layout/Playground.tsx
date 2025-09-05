@@ -247,9 +247,9 @@ const dragConstraintsRef = useRef<HTMLDivElement>(null!);
 const TemplateSelector = ({ activeTemplate, onSelect }: { activeTemplate: LayoutTemplate, onSelect: (template: LayoutTemplate) => void }) => {
   const templates = [
     { id: 'default', name: 'Standard', icon: Square, disabled: false },
+    { id: 'footer-focus', name: 'Footer', icon: PanelRight, disabled: false },
     { id: 'image-left', name: 'Split', icon: Columns, disabled: true },
     { id: 'text-overlay', name: 'Overlay', icon: Layers, disabled: true },
-    { id: 'footer-focus', name: 'Footer', icon: PanelRight, disabled: false },
   ] as const;
 
   return (
