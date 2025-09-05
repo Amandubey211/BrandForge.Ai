@@ -4,7 +4,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import SplitText from '../animations/SplitText';
-import Aurora from '../animations/Aurora'; // [ADDED] Import the new Aurora component
+// import Aurora from '../animations/Aurora'; 
 import { ArrowDown } from 'lucide-react';
 import type Lenis from 'lenis';
 
@@ -32,12 +32,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   return (
     <div className="relative overflow-hidden  -mt-[88px] pt-[88px]">
       <div className="absolute inset-0 z-0">
-        <Aurora
+        {/* <Aurora
           key={brandColor} // Use key to force re-render on color change
           colorStops={[brandColor, '#7cff67', brandColor]}
           amplitude={0.3}
           blend={0.9}
-        />
+        /> */}
       </div>
 
       {/* The content now sits on top of the Aurora canvas */}
