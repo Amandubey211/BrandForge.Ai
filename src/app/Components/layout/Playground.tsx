@@ -140,12 +140,12 @@ const dragConstraintsRef = useRef<HTMLDivElement>(null!);
         />
       </div>
 
-      <div className="h-[80vh]  bg-white border border-slate-200 rounded-2xl shadow-2xl shadow-indigo-500/10 flex flex-col ">
+      <div className="h-[85vh]  bg-white border border-slate-200 rounded-2xl shadow-2xl shadow-indigo-500/10 flex flex-col ">
         <div className="flex flex-grow min-h-0">
           <div className="w-full max-w-xs p-5 border-r border-slate-200 flex flex-col space-y-6 overflow-y-auto">
             <div>
               <h3 className="text-md font-semibold text-slate-800 mb-3 flex items-center gap-2"><Palette size={16} /> Brand Identity</h3>
-              <div className="space-y-4">
+              <div className="space-y-2">
                 <div>
                   <label className="text-sm font-medium text-slate-600 mb-1 block">Color</label>
                   <input type="color" value={brandColor} onChange={(e) => setBrandColor(e.target.value)} className="w-full h-10 p-0 border-none cursor-pointer rounded-md" />
@@ -162,7 +162,7 @@ const dragConstraintsRef = useRef<HTMLDivElement>(null!);
                 <FileInputCompact label="Logo" file={formData.logoFile} onFileChange={(e) => handleFileChange(e, 'logo')} onRemove={() => handleRemoveFile('logo')} />
               </div>
             </div>
-            <div className="border-t border-slate-200 pt-6">
+            <div className="border-t border-slate-200 pt-2">
               <h3 className="text-md font-semibold text-slate-800 mb-3 flex items-center gap-2"><FileImage size={16} /> Post Image</h3>
               <FileInputCompact label="Your Image" file={formData.imageFile} onFileChange={(e) => handleFileChange(e, 'image')} onRemove={() => handleRemoveFile('image')} />
             </div>
