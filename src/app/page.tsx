@@ -1,4 +1,3 @@
-// src/app/page.tsx
 'use client';
 
 import { useRef, useState } from 'react';
@@ -70,7 +69,7 @@ export default function Home() {
     <div className="min-h-screen bg-slate-50 text-slate-800 bg-grid">
       <Header brandColor={brandColor} />
       <HeroSection brandColor={brandColor} setBrandColor={setBrandColor} generatorRef={playgroundRef} />
-      <div id="generator" ref={playgroundRef} className='-'>
+      <div id="generator" ref={playgroundRef} className='md:px-10'>
         <Playground
           brandColor={brandColor} setBrandColor={setBrandColor}
           onGenerate={handleGenerate} isLoading={isLoading}

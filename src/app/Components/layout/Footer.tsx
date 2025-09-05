@@ -1,99 +1,100 @@
 // src/app/Components/layout/Footer.tsx
 'use client';
 
-import React from 'react';
-import Link from 'next/link';
-import { Twitter, Instagram, Linkedin } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Sparkles, Twitter, Instagram, Linkedin, Github } from 'lucide-react';
 
 interface FooterProps {
   brandColor: string;
 }
 
-const companyLinks = [
-  { href: '#', label: 'About Us' },
-  { href: '#', label: 'Blog' },
-  { href: '#', label: 'Careers' },
-];
-
-const legalLinks = [
-  { href: '#', label: 'Privacy Policy' },
-  { href: '#', label: 'Terms of Service' },
-];
-
 export const Footer: React.FC<FooterProps> = ({ brandColor }) => {
+  const currentYear = new Date().getFullYear();
+  
+  const links = {
+    product: ['Features', 'Templates', 'Pricing', 'API', 'Examples'],
+    company: ['About', 'Blog', 'Careers', 'Contact', 'Partners'],
+    resources: ['Documentation', 'Help Center', 'Community', 'Guidelines', 'Webinars'],
+    legal: ['Privacy', 'Terms', 'Security', 'Cookies', 'Compliance']
+  };
+
+  const socialLinks = [
+    { icon: <Twitter className="h-5 w-5" />, href: '#', label: 'Twitter' },
+    { icon: <Instagram className="h-5 w-5" />, href: '#', label: 'Instagram' },
+    { icon: <Linkedin className="h-5 w-5" />, href: '#', label: 'LinkedIn' },
+    { icon: <Github className="h-5 w-5" />, href: '#', label: 'GitHub' }
+  ];
+
   return (
-    <footer className="bg-slate-900 text-slate-300">
-      <div className="container mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-          {/* Logo and Mission */}
-          <div className="md:col-span-1">
-            <Link href="/" className="text-2xl font-bold text-white">
-              Party<span style={{ color: brandColor }}>Hub</span>
-            </Link>
-            <p className="mt-4 text-sm text-slate-400">
-              Your AI-powered platform for effortless event planning.
+    <footer className="bg-slate-900 text-white pt-16 pb-8">
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
+          {/* Brand Section */}
+          <div className="lg:col-span-1">
+            <div className="flex items-center space-x-2 mb-4">
+              <div className="p-2 rounded-lg" style={{ backgroundColor: brandColor }}>
+                <Sparkles className="h-6 w-6 text-white" />
+              </div>
+              <span className="text-xl font-bold">PartyHub</span>
+            </div>
+            
+            <p className="text-slate-400 mb-6 max-w-xs">
+              Create stunning social media posts with AI-powered magic. 
+              No design skills needed.
             </p>
+            
+            <div className="flex space-x-4">
+              {socialLinks.map((social, index) => (
+                <motion.a
+                  key={index}
+                  href={social.href}
+                  className="p-2 bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  aria-label={social.label}
+                >
+                  {social.icon}
+                </motion.a>
+              ))}
+            </div>
           </div>
 
-          {/* Navigation Links */}
-          <div className="grid grid-cols-2 gap-8 md:col-span-2">
-            <div>
-              <h3 className="font-semibold text-white tracking-wider">Company</h3>
-              <ul className="mt-4 space-y-2">
-                {companyLinks.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      className="text-sm hover:text-white transition-colors"
+          {/* Links Sections */}
+          {Object.entries(links).map(([category, items], index) => (
+            <div key={category} className="lg:col-span-1">
+              <h3 className="font-semibold text-lg mb-4 capitalize">{category}</h3>
+              <ul className="space-y-2">
+                {items.map((item, itemIndex) => (
+                  <li key={itemIndex}>
+                    <a 
+                      href="#" 
+                      className="text-slate-400 hover:text-white transition-colors"
                     >
-                      {link.label}
-                    </Link>
+                      {item}
+                    </a>
                   </li>
                 ))}
               </ul>
             </div>
-            <div>
-              <h3 className="font-semibold text-white tracking-wider">Legal</h3>
-              <ul className="mt-4 space-y-2">
-                {legalLinks.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      className="text-sm hover:text-white transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
+          ))}
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-12 border-t border-slate-800 pt-8 flex flex-col items-center justify-between sm:flex-row">
-          <p className="text-sm text-slate-500">
-            © {new Date().getFullYear()} PartyHub. All Rights Reserved.
+        <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+          <p className="text-slate-400 text-sm mb-4 md:mb-0">
+            © {currentYear} PartyHub Generator. All rights reserved.
           </p>
-          <div className="mt-4 flex gap-x-6 sm:mt-0">
-            <Link
-              href="#"
-              className="text-slate-500 hover:text-slate-300 transition-colors"
-            >
-              <Twitter className="h-5 w-5" />
-            </Link>
-            <Link
-              href="#"
-              className="text-slate-500 hover:text-slate-300 transition-colors"
-            >
-              <Instagram className="h-5 w-5" />
-            </Link>
-            <Link
-              href="#"
-              className="text-slate-500 hover:text-slate-300 transition-colors"
-            >
-              <Linkedin className="h-5 w-5" />
-            </Link>
+          
+          <div className="flex items-center space-x-6">
+            <a href="#" className="text-slate-400 hover:text-white text-sm transition-colors">
+              Privacy Policy
+            </a>
+            <a href="#" className="text-slate-400 hover:text-white text-sm transition-colors">
+              Terms of Service
+            </a>
+            <a href="#" className="text-slate-400 hover:text-white text-sm transition-colors">
+              Cookie Policy
+            </a>
           </div>
         </div>
       </div>
