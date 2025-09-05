@@ -1,4 +1,4 @@
-// src/app/Components/layout/Footer.tsx
+
 'use client';
 
 import { motion } from 'framer-motion';

@@ -1,14 +1,12 @@
-// src/app/Components/layout/HeroSection.tsx
 'use client';
 
 import React from 'react';
 import { motion } from 'framer-motion';
 import SplitText from '../animations/SplitText';
-// import Aurora from '../animations/Aurora'; 
+import Aurora from '../animations/Aurora'; 
 import { ArrowDown } from 'lucide-react';
 import type Lenis from 'lenis';
 
-// Define the shape of the props this component expects
 interface HeroSectionProps {
   brandColor: string;
   setBrandColor: (color: string) => void;
@@ -32,15 +30,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   return (
     <div className="relative overflow-hidden  -mt-[88px] pt-[88px]">
       <div className="absolute inset-0 z-0">
-        {/* <Aurora
-          key={brandColor} // Use key to force re-render on color change
+        <Aurora
+          key={brandColor} 
           colorStops={[brandColor, '#7cff67', brandColor]}
           amplitude={0.3}
           blend={0.9}
-        /> */}
+        />
       </div>
 
-      {/* The content now sits on top of the Aurora canvas */}
       <div className="relative z-10">
         <section className="text-center py-24 md:py-32 px-6 ">
           <div className="container mx-auto">

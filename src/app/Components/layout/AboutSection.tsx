@@ -1,4 +1,3 @@
-// src/app/Components/layout/AboutSection.tsx
 'use client';
 
 import { useState } from 'react';
@@ -6,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { User, Layers3, Cpu } from 'lucide-react';
 import Link from 'next/link';
 
-// Data for the tabs
 const tabs = [
   { id: 'owner', label: 'About the Developer', icon: User },
   { id: 'project', label: 'About the Project', icon: Layers3 },

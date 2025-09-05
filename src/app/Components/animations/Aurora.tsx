@@ -1,4 +1,3 @@
-// src/app/Components/animations/Aurora.tsx
 'use client';
 
 import { useEffect, useRef } from 'react';

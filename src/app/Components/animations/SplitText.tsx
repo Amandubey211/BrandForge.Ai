@@ -1,4 +1,3 @@
-// src/components/animations/SplitText.tsx
 
 import React, { useRef, useEffect, useState } from 'react';
 import { gsap } from 'gsap';
@@ -22,7 +21,7 @@ export interface SplitTextProps {
   tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span';
   textAlign?: React.CSSProperties['textAlign'];
   onLetterAnimationComplete?: () => void;
-  color?: string; // ADDED: New prop for dynamic text color
+  color?: string; 
 }
 
 const SplitText: React.FC<SplitTextProps> = ({
@@ -153,12 +152,11 @@ const SplitText: React.FC<SplitTextProps> = ({
   );
 
   const renderTag = () => {
-    // UPDATED: Conditionally add color to the style object
     const style: React.CSSProperties = {
       textAlign,
       wordWrap: 'break-word',
       willChange: 'transform, opacity',
-      ...(color && { color }), // This is the key change
+      ...(color && { color }), 
     };
     const classes = `split-parent overflow-hidden inline-block whitespace-normal ${className}`;
     switch (tag) {
