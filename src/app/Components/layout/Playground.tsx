@@ -113,7 +113,6 @@ export const Playground: React.FC<PlaygroundProps> = ({
         </div>
 
         <div className="flex flex-col lg:flex-row flex-grow min-h-0">
-          {/* --- Brand Panel (Left) --- */}
           <div
             className={`${
               mobileActivePanel === "brand" ? "block" : "hidden"

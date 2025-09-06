@@ -38,7 +38,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
       {generatedPost && (
         <button
           onClick={() => setIsPreviewModalOpen(true)}
-          className="absolute top-4 right-4 z-20 p-2 bg-white/80 backdrop-blur-sm rounded-full hover:bg-white transition shadow-lg"
+          className="absolute top-4 right-4 z-20 p-2 bg-white/80 backdrop-blur-sm rounded-full hover:bg-white transition "
           aria-label="Open full preview"
         >
           <Eye size={20} className="text-slate-700" />
