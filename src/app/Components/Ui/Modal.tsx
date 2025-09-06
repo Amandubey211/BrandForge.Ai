@@ -1,3 +1,5 @@
+// src/components/Ui/Modal.tsx
+
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
@@ -9,53 +11,57 @@ interface ModalProps {
   onClose: () => void;
   title: string;
   children: ReactNode;
+  size?: "sm" | "md" | "lg" | "xl" | "2xl";
 }
+
+const sizeClasses = {
+  sm: "max-w-sm",
+  md: "max-w-md",
+  lg: "max-w-lg",
+  xl: "max-w-xl",
+  "2xl": "max-w-2xl",
+};
 
 export const Modal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
   title,
   children,
+  size = "2xl",
 }) => {
   useEffect(() => {
-    // Function to handle the Escape key press
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         onClose();
       }
     };
 
-    // When the modal is open...
     if (isOpen) {
-      // 1. Prevent background scrolling
       document.body.style.overflow = "hidden";
-      // 2. Add listener for the Escape key
       document.addEventListener("keydown", handleEscape);
     }
 
-    // Cleanup function that runs when the modal closes or component unmounts
     return () => {
-      // 1. Restore background scrolling
       document.body.style.overflow = "unset";
-      // 2. Remove the Escape key listener to prevent memory leaks
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [isOpen, onClose]); // Re-run the effect if isOpen or onClose changes
+  }, [isOpen, onClose]);
 
   return (
     <AnimatePresence>
       {isOpen && (
-        // The main container is now a portal-like div that handles the backdrop and centering
+        // --- ENHANCED WRAPPER ---
         <motion.div
-          className="fixed h-full inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 pt-16 sm:pt-24"
+          // Aligns modal to the top with generous vertical padding for better UX
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 pt-16 sm:pt-24"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }} // Faster transition for the backdrop
+          transition={{ duration: 0.2 }}
         >
           {/* Backdrop */}
           <motion.div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm h-svw"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm max-h-svh"
             onClick={onClose}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -64,19 +70,24 @@ export const Modal: React.FC<ModalProps> = ({
 
           {/* Modal Content */}
           <motion.div
-            className="relative bg-white rounded-xl shadow-2xl p-6 w-auto max-w-3xl mb-8"
-            // Stop click events from bubbling up to the backdrop and closing the modal
+            // Added mb-8 for bottom spacing when scrolling
+            className={`relative bg-white rounded-xl shadow-2xl w-full mb-8 ${sizeClasses[size]}`}
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
             aria-labelledby="modal-title"
-            initial={{ scale: 0.95, y: 20, opacity: 0 }}
+            // Refined animation for top-aligned layout
+            initial={{ scale: 0.95, y: -20, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.95, y: 20, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
           >
-            <div className="flex justify-between items-center mb-4">
-              <h3 id="modal-title" className="text-xl font-bold text-slate-800">
+            {/* Refined Header */}
+            <div className="flex justify-between items-center p-4 sm:p-5 border-b border-slate-200">
+              <h3
+                id="modal-title"
+                className="text-lg font-semibold text-slate-800"
+              >
                 {title}
               </h3>
               <button
@@ -84,10 +95,11 @@ export const Modal: React.FC<ModalProps> = ({
                 className="p-1 rounded-full text-slate-500 hover:bg-slate-100 hover:text-slate-800 transition-colors"
                 aria-label="Close modal"
               >
-                <X size={20} />
+                <X size={22} />
               </button>
             </div>
-            {children}
+            {/* Content Area with Padding */}
+            <div className="p-4 sm:p-5">{children}</div>
           </motion.div>
         </motion.div>
       )}

@@ -1,3 +1,5 @@
+// src/components/layout/HeroSection.tsx
+
 "use client";
 
 import React from "react";
@@ -21,14 +23,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   generatorRef,
 }) => {
   const handleScrollToGenerator = () => {
+    // This uses a smooth scroll library, ensure it's handled gracefully
     const lenis = (window as { lenis?: Lenis }).lenis;
     if (lenis && generatorRef.current) {
       lenis.scrollTo(generatorRef.current, { offset: -100 });
+    } else if (generatorRef.current) {
+      // Fallback for standard browser scroll
+      generatorRef.current.scrollIntoView({ behavior: "smooth" });
     }
   };
 
   return (
-    <div className="relative overflow-hidden  -mt-[88px] pt-[88px]">
+    <div className="relative overflow-hidden -mt-[88px] pt-[88px]">
       <div className="absolute inset-0 z-0">
         <Aurora
           key={brandColor}
@@ -39,12 +45,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       </div>
 
       <div className="relative z-10">
-        <section className="text-center py-24 md:pt-44 px-6 ">
+        <section className="text-center py-24 md:pt-44 px-4 sm:px-6">
           <div className="container mx-auto">
             <div className="text-4xl md:text-6xl font-extrabold text-slate-900 leading-tight">
               <SplitText
                 text="AI-Powered Social Posts for "
-                tag="span"
+                tag="h1" // Use h1 for semantic SEO
                 splitType="words"
                 className="inline"
               />
@@ -63,12 +69,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               delay={20}
               className="mt-4 text-lg text-slate-600 max-w-2xl mx-auto"
             />
-            <div className="mt-8 flex justify-center items-center gap-3">
+            <div className="mt-8 flex justify-center items-center gap-3 flex-wrap">
               {PRESET_COLORS.map((color) => (
                 <button
                   key={color}
                   onClick={() => setBrandColor(color)}
-                  className="w-6 h-6 rounded-full transition-transform duration-200 ease-in-out"
+                  className="w-7 h-7 rounded-full transition-transform duration-200 ease-in-out"
                   style={{
                     backgroundColor: color,
                     transform:
@@ -84,7 +90,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             </div>
             <motion.button
               onClick={handleScrollToGenerator}
-              className="mt-10 inline-flex items-center gap-2 px-8 py-4 bg-slate-900 text-white font-semibold rounded-lg shadow-lg hover:bg-slate-700 transition-all duration-300"
+              className="mt-10 inline-flex items-center gap-2 px-6 py-3 md:px-8 md:py-4 bg-slate-900 text-white font-semibold rounded-lg shadow-lg hover:bg-slate-700 transition-all duration-300 text-base md:text-lg"
               whileHover={{ scale: 1.05, gap: "12px" }}
               whileTap={{ scale: 0.95 }}
             >

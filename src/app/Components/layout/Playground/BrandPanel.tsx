@@ -4,13 +4,11 @@ import React, { ChangeEvent } from "react";
 import { Palette, FileImage } from "lucide-react";
 import { BRAND_TONES } from "@/config/constants";
 import { FileInputCompact } from "./FileInputCompact";
-// FIX: Ensure FormData is imported from the parent Playground component, not defined locally.
 import { FormData } from "../Playground";
 
 interface BrandPanelProps {
   brandColor: string;
   setBrandColor: (color: string) => void;
-  // This now correctly refers to the imported FormData type
   formData: FormData;
   setFormData: React.Dispatch<React.SetStateAction<FormData>>;
   handleFileChange: (
@@ -29,13 +27,13 @@ export const BrandPanel: React.FC<BrandPanelProps> = ({
   handleRemoveFile,
 }) => {
   return (
-    <div className="w-full max-w-xs p-5 border-r border-slate-200 flex flex-col space-y-6 overflow-y-auto">
+    <div className="w-full lg:max-w-xs p-5 lg:border-r border-b lg:border-b-0 border-slate-200 flex flex-col space-y-6 overflow-y-auto">
       {/* --- Brand Identity Section --- */}
       <div>
         <h3 className="text-md font-semibold text-slate-800 mb-3 flex items-center gap-2">
           <Palette size={16} /> Brand Identity
         </h3>
-        <div className="space-y-2">
+        <div className="space-y-4">
           <div>
             <label className="text-sm font-medium text-slate-600 mb-1 block">
               Color
@@ -56,7 +54,7 @@ export const BrandPanel: React.FC<BrandPanelProps> = ({
               onChange={(e) =>
                 setFormData((p) => ({ ...p, brandTone: e.target.value }))
               }
-              className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm"
+              className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm bg-white focus:ring-2 focus:ring-indigo-500"
             >
               {BRAND_TONES.map((tone) => (
                 <option key={tone}>{tone}</option>
@@ -73,7 +71,7 @@ export const BrandPanel: React.FC<BrandPanelProps> = ({
       </div>
 
       {/* --- Post Image Section --- */}
-      <div className="border-t border-slate-200 pt-2">
+      <div className="border-t border-slate-200 pt-4">
         <h3 className="text-md font-semibold text-slate-800 mb-3 flex items-center gap-2">
           <FileImage size={16} /> Post Image
         </h3>

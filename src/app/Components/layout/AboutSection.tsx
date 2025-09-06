@@ -1,45 +1,112 @@
+// src/components/layout/AboutSection.tsx
+
 "use client";
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Layers3, Cpu } from "lucide-react";
+import {
+  User,
+  Layers3,
+  Cpu,
+  Github,
+  Linkedin,
+  ArrowRight,
+  Move3d, // For Framer Motion
+  Wind, // For Tailwind
+  Rocket, // For GSAP
+  Sparkles, // For Gemini
+  Mouse, // For Lenis
+} from "lucide-react";
 import Link from "next/link";
 
+// --- SVG Icon Components for Tech Stack ---
+const TechIcons = {
+  NextJS: () => (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 128 128"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M64 128C99.3462 128 128 99.3462 128 64C128 28.6538 99.3462 0 64 0C28.6538 0 0 28.6538 0 64C0 99.3462 28.6538 128 64 128Z"
+        fill="black"
+      />
+      <path
+        d="M98.7188 103.5H80.5312V55.8438L53.2188 88.375V70.625L75.6875 44.125H98.7188V103.5Z"
+        fill="white"
+      />
+      <path d="M51.125 44.125H32.0938V103.5H51.125V44.125Z" fill="#999999" />
+    </svg>
+  ),
+  TypeScript: () => (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 128 128"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect width="128" height="128" rx="16" fill="#3178C6" />
+      <path d="M28 28H100V100H28V28Z" fill="#3178C6" />
+      <path
+        d="M59.186 91.3333H88.32V79.2293L73.0667 64.9147L88.32 50.6053V38.496H59.186V50.6053H70.1333L63.3067 57.76L59.186 53.4453V45.28H48.24V91.3333H37.2933V38.496H26.3467V27.168H101.68V38.496H90.7333V91.3333H101.68V102.661H26.3467V91.3333H37.2933V80.0053H48.24V68.6773L59.186 80.0053V91.3333Z"
+        fill="white"
+        transform="translate(0, -2) scale(0.95)"
+      />
+    </svg>
+  ),
+};
+
 const tabs = [
-  { id: "owner", label: "About the Developer", icon: User },
-  { id: "project", label: "About the Project", icon: Layers3 },
+  { id: "owner", label: "Developer", icon: User },
+  { id: "project", label: "Project", icon: Layers3 },
   { id: "tech", label: "Tech Stack", icon: Cpu },
 ];
 
 const techStack = [
   {
-    name: "Next.js",
-    description: "For a high-performance, server-rendered React application.",
+    name: "Next.js & React",
+    description:
+      "High-performance, server-rendered application with a component-driven architecture.",
+    icon: <TechIcons.NextJS />,
+  },
+  {
+    name: "Google Gemini",
+    description:
+      "Core AI engine for generating creative, context-aware post copy and content.",
+    icon: <Sparkles className="h-6 w-6 text-purple-500" />,
   },
   {
     name: "TypeScript",
-    description: "To ensure code quality, maintainability, and scalability.",
+    description:
+      "Ensures code quality, maintainability, and catches errors during development.",
+    icon: <TechIcons.TypeScript />,
   },
   {
     name: "Tailwind CSS",
     description:
-      "For rapid, utility-first styling and a consistent design system.",
+      "Rapid, utility-first styling for creating a consistent, responsive design system.",
+    icon: <Wind className="h-6 w-6 text-cyan-500" />,
   },
   {
     name: "Framer Motion",
-    description: "To create fluid animations and a delightful user experience.",
+    description:
+      "Fluid, meaningful animations that enhance the overall user experience.",
+    icon: <Move3d className="h-6 w-6 text-indigo-500" />,
   },
   {
-    name: "GSAP & OGL",
-    description: "For advanced, high-performance text and WebGL animations.",
+    name: "GSAP",
+    description:
+      "For advanced, high-performance text reveals and timeline-based animations.",
+    icon: <Rocket className="h-6 w-6 text-green-500" />,
   },
   {
     name: "Lenis",
-    description: "To provide a premium, smooth scrolling experience.",
-  },
-  {
-    name: "Google Gemini",
-    description: "As the core AI engine for generating creative post copy.",
+    description:
+      "Provides a premium, smooth-scrolling experience across the application.",
+    icon: <Mouse className="h-6 w-6 text-slate-500" />,
   },
 ];
 
@@ -47,9 +114,9 @@ export const AboutSection = ({ brandColor }: { brandColor: string }) => {
   const [activeTab, setActiveTab] = useState(tabs[0].id);
 
   return (
-    <section id="about" className="py-20 bg-slate-50 bg-grid">
-      <div className="container mx-auto px-6">
-        <h2 className="text-3xl font-bold text-center mb-12">
+    <section id="about" className="py-16 sm:py-20 bg-slate-50 bg-grid">
+      <div className="container mx-auto px-4 sm:px-6">
+        <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12">
           Behind the Build
         </h2>
 
@@ -60,7 +127,7 @@ export const AboutSection = ({ brandColor }: { brandColor: string }) => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`relative flex-1 py-3 px-4 text-sm font-medium transition-colors focus:outline-none
+                className={`relative flex-1 py-3 px-2 sm:px-4 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 rounded-md
                   ${
                     activeTab === tab.id
                       ? "text-slate-900"
@@ -68,7 +135,8 @@ export const AboutSection = ({ brandColor }: { brandColor: string }) => {
                   }`}
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
-                  <tab.icon className="h-4 w-4" /> {tab.label}
+                  <tab.icon className="h-5 w-5 sm:h-4 sm:w-4" />
+                  <span className="hidden sm:inline">{tab.label}</span>
                 </span>
                 {activeTab === tab.id && (
                   <motion.div
@@ -82,7 +150,7 @@ export const AboutSection = ({ brandColor }: { brandColor: string }) => {
           </div>
 
           {/* Tab Content */}
-          <div className="relative min-h-[320px] p-6">
+          <div className="relative min-h-[350px] p-4 sm:p-6">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}
@@ -92,82 +160,115 @@ export const AboutSection = ({ brandColor }: { brandColor: string }) => {
                 transition={{ duration: 0.2 }}
               >
                 {activeTab === "owner" && (
-                  <div className="space-y-4 text-slate-700">
-                    <h3 className="text-xl font-bold text-slate-900">
+                  <div className="space-y-4 text-slate-700 flex flex-col h-full">
+                    <h3 className="text-lg sm:text-xl font-bold text-slate-900">
                       Aman Dubey
                     </h3>
                     <p>
-                      I am a product-minded Full-Stack Developer with a passion
-                      for building AI-driven applications that are both powerful
-                      and beautiful. My expertise lies in the modern web stack,
-                      particularly Next.js and React, and I have extensive
-                      experience integrating generative AI models like Google
-                      Gemini to create engaging user experiences.
+                      As a Frontend-focused Full Stack Developer with over 2
+                      years of experience, I specialize in building scalable,
+                      high-performance applications using React and Next.js. My
+                      background includes leading frontend teams and
+                      architecting robust UI/UX solutions for SaaS and LMS
+                      products.
                     </p>
                     <p>
-                      This project is a reflection of my core philosophy: lead
-                      with a high-quality user experience, build on a robust and
-                      scalable architecture, and leverage AI to create genuinely
-                      useful tools.
+                      This project is a direct reflection of my philosophy: to
+                      merge clean architecture with a polished, engaging user
+                      experience, leveraging AI to create tools that are not
+                      just functional, but delightful to use.
                     </p>
-                    <Link
-                      href="https://amandubey.vercel.app/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block font-semibold"
-                      style={{ color: brandColor }}
-                    >
-                      View My Portfolio &rarr;
-                    </Link>
+                    <div className="!mt-auto pt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                      <Link
+                        href="https://amandubey.vercel.app/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 font-semibold group"
+                        style={{ color: brandColor }}
+                      >
+                        View My Portfolio
+                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      </Link>
+                      <div className="flex items-center gap-4">
+                        <a
+                          href="https://github.com/AmanDubey02"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-slate-500 hover:text-slate-800 transition-colors"
+                          aria-label="GitHub"
+                        >
+                          <Github className="h-6 w-6" />
+                        </a>
+                        <a
+                          href="https://www.linkedin.com/in/amandubeydev/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-slate-500 hover:text-slate-800 transition-colors"
+                          aria-label="LinkedIn"
+                        >
+                          <Linkedin className="h-6 w-6" />
+                        </a>
+                      </div>
+                    </div>
                   </div>
                 )}
 
                 {activeTab === "project" && (
                   <div className="space-y-4 text-slate-700">
-                    <h3 className="text-xl font-bold text-slate-900">
+                    <h3 className="text-lg sm:text-xl font-bold text-slate-900">
                       Purpose & Methodology
                     </h3>
                     <p>
-                      The goal of this assignment was to build an AI-powered
-                      social media post generator for PartyHub&apos;s event
-                      vendors. The key was to focus on the **quality of the
-                      output**, ensuring the generated content was polished and
-                      truly reflected the vendor&apos;s brand identity.
+                      The goal was to build an AI-powered social media post
+                      generator. The primary focus was on the{" "}
+                      <b style={{ color: brandColor }}>quality of the output</b>
+                      , ensuring the generated content was polished,
+                      brand-aligned, and genuinely useful.
                     </p>
                     <p>
-                      My approach was **UX-First**. I began by architecting a
-                      delightful and interactive front-end experience. This
-                      included creating a dynamic, brand-aware UI with advanced
-                      animations and a guided multi-step form. This solid
-                      foundation ensures that the powerful AI backend is
-                      presented through an interface that is a joy to use.
+                      The approach was strictly{" "}
+                      <b style={{ color: brandColor }}>UX-First</b>. By
+                      architecting a delightful and interactive frontend, the
+                      powerful AI backend is delivered through an interface that
+                      is intuitive and a joy to use.
                     </p>
                   </div>
                 )}
 
                 {activeTab === "tech" && (
-                  <div className="space-y-4">
-                    <h3 className="text-xl font-bold text-slate-900 mb-4">
+                  <div>
+                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-4">
                       Tools & Technologies
                     </h3>
-                    <ul className="space-y-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {techStack.map((tech) => (
-                        <li key={tech.name} className="flex items-start">
-                          <div
-                            className="flex-shrink-0 h-5 w-5 rounded-full mt-1"
-                            style={{ backgroundColor: brandColor }}
-                          />
-                          <div className="ml-3">
+                        <motion.div
+                          key={tech.name}
+                          className="flex items-start p-4 border border-slate-200 rounded-lg bg-white"
+                          whileHover={{
+                            y: -4,
+                            boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                          }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 300,
+                            damping: 20,
+                          }}
+                        >
+                          <div className="flex-shrink-0 h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center">
+                            {tech.icon}
+                          </div>
+                          <div className="ml-4">
                             <p className="font-semibold text-slate-800">
                               {tech.name}
                             </p>
-                            <p className="text-sm text-slate-600">
+                            <p className="text-sm text-slate-600 mt-1">
                               {tech.description}
                             </p>
                           </div>
-                        </li>
+                        </motion.div>
                       ))}
-                    </ul>
+                    </div>
                   </div>
                 )}
               </motion.div>
