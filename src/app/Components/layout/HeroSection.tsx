@@ -5,7 +5,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import SplitText from "../animations/SplitText";
-import Aurora from "../animations/Aurora";
+// import Aurora from "../animations/Aurora";
 import { ArrowDown } from "lucide-react";
 import type Lenis from "lenis";
 
@@ -35,14 +35,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
   return (
     <div className="relative overflow-hidden -mt-[88px] pt-[88px]">
-      <div className="absolute inset-0 z-0 hidden md:block">
+      {/* <div className="absolute inset-0 z-0 hidden md:block">
         <Aurora
           key={brandColor}
           colorStops={[brandColor, "#7cff67", brandColor]}
           amplitude={0.3}
           blend={0.9}
         />
-      </div>
+      </div> */}
 
       <div className="relative z-10">
         <section className="text-center py-24 md:pt-44 px-4 sm:px-6">
