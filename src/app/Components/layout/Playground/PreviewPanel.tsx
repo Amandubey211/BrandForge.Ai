@@ -47,7 +47,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
       <motion.div
         layout
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="w-full max-w-2xl  h-auto max-h-[95%] rounded-lg shadow-lg overflow-y-scroll overflow-x-hidden relative z-10 bg-white"
+        className="w-full max-w-2xl  h-auto max-h-[85%] rounded-lg shadow-lg overflow-y-scroll overflow-x-hidden relative z-10 bg-white"
       >
         <PostCard
           template={activeTemplate}

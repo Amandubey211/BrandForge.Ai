@@ -185,7 +185,7 @@ export const Playground: React.FC<PlaygroundProps> = ({
         isOpen={isPreviewModalOpen}
         onClose={() => setIsPreviewModalOpen(false)}
         title="Final Download Preview"
-        size="xl" // <-- ADD THIS PROP
+        size="xl"
       >
         <div className="relative w-full aspect-[4/5] bg-slate-100 rounded-md overflow-hidden">
           <div className="absolute inset-0 transform scale-[0.5] origin-top-left">
