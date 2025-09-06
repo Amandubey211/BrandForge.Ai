@@ -110,4 +110,4 @@ To run this project locally, follow these simple steps.
 
 A link to the video walkthrough explaining the thought process, final architecture, and showcasing the application's features.
 
-**[Insert Your Video Link Here]**
+**https://www.loom.com/share/02a2ce627cfe41b6b4112f2e70a6b95c?sid=a04007d1-66be-4a2b-8334-dd7126d278de**
