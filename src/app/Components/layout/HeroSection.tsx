@@ -35,7 +35,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
   return (
     <div className="relative overflow-hidden -mt-[88px] pt-[88px]">
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 hidden md:block">
         <Aurora
           key={brandColor}
           colorStops={[brandColor, "#7cff67", brandColor]}
