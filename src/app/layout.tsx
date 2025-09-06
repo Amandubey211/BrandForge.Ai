@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
 import { SmoothScroller } from "./Components/layout/SmoothScroller";
-import { Toaster } from "sonner"; // 1. Import Toaster
+import { Toaster } from "sonner";
+import { Analytics } from "@vercel/analytics/next";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -69,6 +70,7 @@ export default function RootLayout({
         <SmoothScroller>
           {children} <Toaster position="top-right" richColors />{" "}
         </SmoothScroller>
+        <Analytics />
       </body>
     </html>
   );
