@@ -1,5 +1,3 @@
-// src/components/layout/AboutSection.tsx
-
 "use client";
 
 import { useState } from "react";
@@ -16,7 +14,6 @@ import {
   Rocket, // For GSAP
   Sparkles, // For Gemini
   Mouse, // For Lenis
-  Code, // Added for potential future use or just for a general tech vibe
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image"; // Import Next.js Image component

@@ -13,7 +13,6 @@ import {
   MessageSquare, // For Topmate
   Twitter, // For X / Twitter
   Mail, // For E-mail
-  Share2, // For Portfolio/Projects link if desired
 } from "lucide-react";
 import Link from "next/link";
 
