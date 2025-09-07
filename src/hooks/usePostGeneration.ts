@@ -15,7 +15,7 @@ export const usePostGeneration = () => {
     }
     setError("");
     setIsLoading(true);
-    setGeneratedPost(null); // Reset previous post
+    setGeneratedPost(null);
 
     try {
       const base64Image = await fileToJpegBase64(formData.imageFile);

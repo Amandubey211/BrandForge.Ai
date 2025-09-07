@@ -83,6 +83,10 @@ export const Header: React.FC<HeaderProps> = ({ brandColor, sectionRefs }) => {
     }
   };
 
+  const handleCreatorClick = () => {
+    window.open("https://amandubey.vercel.app/about", "_blank");
+  };
+
   return (
     <>
       <header className="sticky top-4 z-50 transition-all duration-300 ease-in-out">
@@ -128,8 +132,11 @@ export const Header: React.FC<HeaderProps> = ({ brandColor, sectionRefs }) => {
               ))}
             </nav>
 
-            <button className="hidden md:inline-block px-4 py-2 bg-slate-800 text-white rounded-md font-semibold text-sm hover:bg-slate-700 transition-colors">
-              Vendor Login
+            <button
+              onClick={handleCreatorClick}
+              className="hidden md:inline-block px-4 py-2 bg-slate-800 text-white rounded-md font-semibold text-sm hover:bg-slate-700 transition-colors"
+            >
+              Creator
             </button>
 
             {/* --- Mobile Menu Button --- */}
@@ -174,8 +181,11 @@ export const Header: React.FC<HeaderProps> = ({ brandColor, sectionRefs }) => {
                   {link.label}
                 </a>
               ))}
-              <button className="mt-4 w-full max-w-xs px-4 py-3 bg-slate-800 text-white rounded-md font-semibold text-sm hover:bg-slate-700 transition-colors">
-                Vendor Login
+              <button
+                onClick={handleCreatorClick}
+                className="mt-4 w-full max-w-xs px-4 py-3 bg-slate-800 text-white rounded-md font-semibold text-sm hover:bg-slate-700 transition-colors"
+              >
+                Creator
               </button>
             </nav>
           </motion.div>

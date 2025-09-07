@@ -16,8 +16,10 @@ import {
   Rocket, // For GSAP
   Sparkles, // For Gemini
   Mouse, // For Lenis
+  Code, // Added for potential future use or just for a general tech vibe
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image"; // Import Next.js Image component
 
 // --- SVG Icon Components for Tech Stack ---
 const TechIcons = {
@@ -57,6 +59,7 @@ const TechIcons = {
       />
     </svg>
   ),
+  // You can add more custom SVG icons here for other technologies if needed
 };
 
 const tabs = [
@@ -120,7 +123,8 @@ export const AboutSection = ({ brandColor }: { brandColor: string }) => {
           Behind the Build
         </h2>
 
-        <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg border border-slate-200 p-2">
+        {/* Increased max-w to 5xl for more horizontal space */}
+        <div className="max-w-4xl lg:max-w-5xl xl:max-w-6xl mx-auto bg-white rounded-xl shadow-lg border border-slate-200 p-2">
           {/* Tab Headers */}
           <div className="flex border-b border-slate-200">
             {tabs.map((tab) => (
@@ -150,7 +154,7 @@ export const AboutSection = ({ brandColor }: { brandColor: string }) => {
           </div>
 
           {/* Tab Content */}
-          <div className="relative min-h-[350px] p-4 sm:p-6">
+          <div className="relative min-h-[400px] p-4 sm:p-6 lg:p-8">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}
@@ -160,54 +164,80 @@ export const AboutSection = ({ brandColor }: { brandColor: string }) => {
                 transition={{ duration: 0.2 }}
               >
                 {activeTab === "owner" && (
-                  <div className="space-y-4 text-slate-700 flex flex-col h-full">
-                    <h3 className="text-lg sm:text-xl font-bold text-slate-900">
-                      Aman Dubey
-                    </h3>
-                    <p>
-                      As a Frontend-focused Full Stack Developer with over 2
-                      years of experience, I specialize in building scalable,
-                      high-performance applications using React and Next.js. My
-                      background includes leading frontend teams and
-                      architecting robust UI/UX solutions for SaaS and LMS
-                      products.
-                    </p>
-                    <p>
-                      This project is a direct reflection of my philosophy: to
-                      merge clean architecture with a polished, engaging user
-                      experience, leveraging AI to create tools that are not
-                      just functional, but delightful to use.
-                    </p>
-                    <div className="!mt-auto pt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                      <Link
-                        href="https://amandubey.vercel.app/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 font-semibold group"
-                        style={{ color: brandColor }}
+                  <div className="flex flex-col md:flex-row gap-8 text-slate-700 h-full">
+                    {/* Image Section */}
+                    <div className="flex-shrink-0 w-full md:w-1/3 flex justify-center items-start pt-2">
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.1, duration: 0.5 }}
+                        className="relative w-52 h-52 sm:w-48 sm:h-48 rounded-full overflow-hidden shadow-xl border-4"
+                        style={{ borderColor: brandColor }} // Dynamic border color
                       >
-                        View My Portfolio
-                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                      </Link>
-                      <div className="flex items-center gap-4">
-                        <a
-                          href="https://github.com/AmanDubey02"
+                        <Image
+                          src="/amandubey.png"
+                          alt="Aman Dubey - Developer"
+                          layout="fill"
+                          objectFit="cover"
+                          // priority
+                        />
+                      </motion.div>
+                    </div>
+
+                    {/* Text and Links Section */}
+                    <div className="flex-1 space-y-4 flex flex-col">
+                      <h3 className="text-xl sm:text-2xl font-bold text-slate-900">
+                        Aman Dubey
+                      </h3>
+                      <p className="text-lg font-medium text-slate-800">
+                        Frontend-focused Full Stack Developer
+                      </p>
+                      <p>
+                        With over 2 years of experience, I specialize in
+                        building scalable, high-performance applications using
+                        React and Next.js. My background includes leading
+                        frontend teams and architecting robust UI/UX solutions
+                        for SaaS, LMS, and fintech products.
+                      </p>
+                      <p>
+                        This project, PartyHub, is a direct reflection of my
+                        philosophy: to merge clean architecture with a polished,
+                        engaging user experience, leveraging AI to create tools
+                        that are not just functional, but delightful to use.
+                      </p>
+                      <div className="!mt-auto pt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <Link
+                          href="https://amandubey.vercel.app/"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-slate-500 hover:text-slate-800 transition-colors"
-                          aria-label="GitHub"
+                          className="inline-flex items-center gap-2 font-semibold group hover:underline"
+                          style={{ color: brandColor }}
                         >
-                          <Github className="h-6 w-6" />
-                        </a>
-                        <a
-                          href="https://www.linkedin.com/in/amandubeydev/"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-slate-500 hover:text-slate-800 transition-colors"
-                          aria-label="LinkedIn"
-                        >
-                          <Linkedin className="h-6 w-6" />
-                        </a>
+                          View My Portfolio
+                          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                        </Link>
+                        <div className="flex items-center gap-4">
+                          <a
+                            href="https://github.com/Amandubey211" // Ensure this is your correct GitHub
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-slate-500 hover:text-slate-800 transition-colors"
+                            aria-label="GitHub"
+                          >
+                            <Github className="h-7 w-7" />{" "}
+                            {/* Increased size */}
+                          </a>
+                          <a
+                            href="https://www.linkedin.com/in/profile-amandubey/" // Ensure this is your correct LinkedIn
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-slate-500 hover:text-slate-800 transition-colors"
+                            aria-label="LinkedIn"
+                          >
+                            <Linkedin className="h-7 w-7" />{" "}
+                            {/* Increased size */}
+                          </a>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -215,39 +245,48 @@ export const AboutSection = ({ brandColor }: { brandColor: string }) => {
 
                 {activeTab === "project" && (
                   <div className="space-y-4 text-slate-700">
-                    <h3 className="text-lg sm:text-xl font-bold text-slate-900">
+                    <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4">
                       Purpose & Methodology
                     </h3>
-                    <p>
-                      The goal was to build an AI-powered social media post
-                      generator. The primary focus was on the{" "}
-                      <b style={{ color: brandColor }}>quality of the output</b>
-                      , ensuring the generated content was polished,
-                      brand-aligned, and genuinely useful.
+                    <p className="text-lg font-medium">
+                      PartyHub was conceptualized to streamline social media
+                      content creation, making it accessible and efficient for
+                      everyone.
                     </p>
                     <p>
-                      The approach was strictly{" "}
+                      The core objective was to develop an AI-powered social
+                      media post generator that truly understands context,
+                      delivers high-quality output, and requires absolutely no
+                      design skills from the user. We focused on crafting
+                      content that is polished, brand-aligned, and genuinely
+                      useful, allowing users to stand out without the usual
+                      hurdles.
+                    </p>
+                    <p>
+                      The development approach was strictly{" "}
                       <b style={{ color: brandColor }}>UX-First</b>. By
-                      architecting a delightful and interactive frontend, the
-                      powerful AI backend is delivered through an interface that
-                      is intuitive and a joy to use.
+                      architecting a delightful, interactive, and highly
+                      intuitive frontend, the powerful AI backend is delivered
+                      through an interface that is not only functional but a joy
+                      to use. This commitment to user experience ensures a
+                      seamless journey from idea to ready-to-post content.
                     </p>
                   </div>
                 )}
 
                 {activeTab === "tech" && (
                   <div>
-                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-4">
+                    <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-6">
                       Tools & Technologies
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {techStack.map((tech) => (
                         <motion.div
                           key={tech.name}
-                          className="flex items-start p-4 border border-slate-200 rounded-lg bg-white"
+                          className="flex items-start p-4 border border-slate-200 rounded-lg bg-white shadow-sm"
                           whileHover={{
                             y: -4,
-                            boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                            boxShadow: "0 6px 16px rgba(0,0,0,0.08)",
                           }}
                           transition={{
                             type: "spring",
@@ -255,7 +294,7 @@ export const AboutSection = ({ brandColor }: { brandColor: string }) => {
                             damping: 20,
                           }}
                         >
-                          <div className="flex-shrink-0 h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center">
+                          <div className="flex-shrink-0 h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center">
                             {tech.icon}
                           </div>
                           <div className="ml-4">
