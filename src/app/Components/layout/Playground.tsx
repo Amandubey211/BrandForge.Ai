@@ -59,7 +59,6 @@ export const Playground: React.FC<PlaygroundProps> = ({
     isFormComplete,
   } = usePlayground({ generatedPost });
 
-  // State to manage which panel is visible on mobile
   const [mobileActivePanel, setMobileActivePanel] = useState<
     "brand" | "preview"
   >("brand");

@@ -31,13 +31,8 @@ export const FileInputCompact: React.FC<FileInputCompactProps> = ({
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
             >
-              {/* FIX: Ensure the icon does not shrink */}
               <FileCheck2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-              {/* 
-                FIX: 
-                - Removed max-w-[150px] to make it responsive.
-                - Added min-w-0 to allow the element to shrink properly within a flex container, enabling truncation.
-              */}
+
               <span className="text-xs font-medium text-slate-700 truncate min-w-0">
                 {file.name}
               </span>

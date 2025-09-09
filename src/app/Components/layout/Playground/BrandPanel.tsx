@@ -28,7 +28,6 @@ export const BrandPanel: React.FC<BrandPanelProps> = ({
 }) => {
   return (
     <div className="w-full lg:max-w-xs p-5 lg:border-r border-b lg:border-b-0 border-slate-200 flex flex-col space-y-6 overflow-y-auto">
-      {/* --- Brand Identity Section --- */}
       <div>
         <h3 className="text-md font-semibold text-slate-800 mb-3 flex items-center gap-2">
           <Palette size={16} /> Brand Identity
@@ -70,7 +69,6 @@ export const BrandPanel: React.FC<BrandPanelProps> = ({
         </div>
       </div>
 
-      {/* --- Post Image Section --- */}
       <div className="border-t border-slate-200 pt-4">
         <h3 className="text-md font-semibold text-slate-800 mb-3 flex items-center gap-2">
           <FileImage size={16} /> Post Image

@@ -34,7 +34,7 @@ export default function Home() {
             generatorRef={generatorRef}
           />
         </div>
-        <div id="generator" ref={generatorRef} className=" px-3 md:px-20">
+        <div id="generator" ref={generatorRef} className="px-3 md:px-20">
           <Playground
             brandColor={brandColor}
             setBrandColor={setBrandColor}
