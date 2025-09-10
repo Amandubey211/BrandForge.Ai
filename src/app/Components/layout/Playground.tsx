@@ -127,7 +127,6 @@ export const Playground: React.FC<PlaygroundProps> = ({
             />
           </div>
 
-          {/* --- Preview Panel (Center) --- */}
           <div
             className={`flex-grow ${
               mobileActivePanel === "preview" ? "flex" : "hidden"

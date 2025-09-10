@@ -1,13 +1,12 @@
-// src/components/layout/HeroSection.tsx
-
 "use client";
 
 import React from "react";
 import { motion } from "framer-motion";
 import SplitText from "../animations/SplitText";
-// import Aurora from "../animations/Aurora";
 import { ArrowDown } from "lucide-react";
 import type Lenis from "lenis";
+// import { PostMarquee } from "../Ui/PostMarquee";
+// import { SAMPLE_POSTS } from "@/config/constants";
 
 interface HeroSectionProps {
   brandColor: string;
@@ -23,34 +22,23 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   generatorRef,
 }) => {
   const handleScrollToGenerator = () => {
-    // This uses a smooth scroll library, ensure it's handled gracefully
     const lenis = (window as { lenis?: Lenis }).lenis;
     if (lenis && generatorRef.current) {
       lenis.scrollTo(generatorRef.current, { offset: -100 });
     } else if (generatorRef.current) {
-      // Fallback for standard browser scroll
       generatorRef.current.scrollIntoView({ behavior: "smooth" });
     }
   };
 
   return (
-    <div className="relative overflow-hidden -mt-[88px] pt-[88px]">
-      {/* <div className="absolute inset-0 z-0 hidden md:block">
-        <Aurora
-          key={brandColor}
-          colorStops={[brandColor, "#7cff67", brandColor]}
-          amplitude={0.3}
-          blend={0.9}
-        />
-      </div> */}
-
+    <div className="relative overflow-hidden -mt-[88px] pt-[88px] pb-20">
       <div className="relative z-10">
-        <section className="text-center py-24 md:pt-44 px-4 sm:px-6">
+        <section className="text-center pt-24 md:pt-32 px-4 sm:px-6">
           <div className="container mx-auto">
             <div className="text-4xl md:text-6xl font-extrabold text-slate-900 leading-tight">
               <SplitText
                 text="AI-Powered Social Posts for "
-                tag="h1" // Use h1 for semantic SEO
+                tag="h1"
                 splitType="words"
                 className="inline"
               />
@@ -100,6 +88,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           </div>
         </section>
       </div>
+
+      {/* Post Marquee Section */}
+      {/* <div className="relative mt-16 md:mt-24">
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-slate-50/80 to-slate-50 z-10" />
+        <PostMarquee posts={SAMPLE_POSTS} brandColor={brandColor} baseVelocity={-5} />
+      </div> */}
     </div>
   );
 };

@@ -20,17 +20,17 @@ const extractJson = (text: string): object | null => {
   }
 };
 
-interface GeneratedPost {
-  headline: string;
-  body: string;
-  hashtags: string[];
-  layout: {
-    theme: 'light' | 'dark';
-    textPosition: string;
-    logoPosition: string;
-    styleSuggestion: string;
-  };
-}
+// interface GeneratedPost {
+//   headline: string;
+//   body: string;
+//   hashtags: string[];
+//   layout: {
+//     theme: 'light' | 'dark';
+//     textPosition: string;
+//     logoPosition: string;
+//     styleSuggestion: string;
+//   };
+// }
 
 // Define the shape of the incoming request body
 interface RequestBody {

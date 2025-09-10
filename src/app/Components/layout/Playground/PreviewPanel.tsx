@@ -33,7 +33,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
   return (
     <div
       ref={dragConstraintsRef}
-      className="flex-grow flex items-center justify-center p-6 bg-slate-50 relative bg-grid "
+      className="flex-grow flex items-center justify-center p-6 bg-slate-50 relative bg-grid2 "
     >
       {generatedPost && (
         <button
