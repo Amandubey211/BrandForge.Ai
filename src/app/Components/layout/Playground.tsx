@@ -77,6 +77,7 @@ export const Playground: React.FC<PlaygroundProps> = ({
       <div className="absolute top-0 left-0 -translate-x-full pointer-events-none">
         <FinalOutputCard
           ref={finalCanvasRef}
+          key={activeTemplate}
           template={activeTemplate}
           imagePreviewUrl={imageBase64}
           logoPreviewUrl={logoBase64}
