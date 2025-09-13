@@ -1,8 +1,7 @@
 "use client";
 import React from "react";
-import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
-
+import { motion } from "framer-motion";
 export const BoxesCore = ({ className, ...rest }: { className?: string }) => {
   const rows = new Array(150).fill(1);
   const cols = new Array(100).fill(1);
@@ -38,7 +37,7 @@ export const BoxesCore = ({ className, ...rest }: { className?: string }) => {
           className="relative h-8 w-16 border-l border-slate-700"
         >
           {cols.map((_, j) => (
-            <motion.div
+            <MotionGlobalConfig.div
               whileHover={{
                 backgroundColor: `${getRandomColor()}`,
                 transition: { duration: 0 },
