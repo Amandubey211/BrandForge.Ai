@@ -56,7 +56,7 @@ export const PostCard: React.FC<PostCardProps> = ({
     <motion.div
       className="absolute cursor-grab active:cursor-grabbing z-40 w-[12%]"
       style={{
-        top: `${logoPosition.y}%`,
+        top: `${logoPosition.x}%`,
         left: `${logoPosition.x}%`,
       }}
       drag
